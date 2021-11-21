@@ -7,11 +7,6 @@ const db = require('../src/db');
 describe('api tests', () => {
   beforeAll(async () => {
     await db.migrate.latest();
-
-    // await db('battle_submission').truncate();
-    // await db('battle').truncate();
-    // await db('user').truncate();
-
     await db.seed.run();
   });
 
@@ -34,9 +29,9 @@ describe('api tests', () => {
   describe('GET /api/v1/battles', () => {
     it('responds with the seeded battles', (done) => {
       const expectedBattles = [
-        { id: 1, streamer_id: '1' },
-        { id: 2, streamer_id: '1' },
-        { id: 3, streamer_id: '1' },
+        { id: 1, streamer_id: '1', streamer_username: 'chrispunsalan' },
+        { id: 2, streamer_id: '1', streamer_username: 'chrispunsalan' },
+        { id: 3, streamer_id: '1', streamer_username: 'chrispunsalan' },
       ];
 
       request(app)

@@ -1,11 +1,28 @@
 const express = require('express');
 
 const queries = require('./battles.queries');
+const User = require('../users/users.model');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const battles = await queries.find();
+  const ids = new Set(battles.map((battle) => battle.streamer_id));
+  const promises = [];
+  ids.forEach(async (id) => {
+    promises.push(User.query()
+      .where('twitch_user_id', id)
+      .first());
+  });
+  const idToUser = new Map();
+  await Promise.all(promises).then((users) => {
+    users.forEach((user) => {
+      idToUser.set(user.twitch_user_id, user);
+    });
+  });
+  battles.forEach((battle) => {
+    battle.streamer_username = idToUser.get(battle.streamer_id).twitch_username;
+  });
   res.json(battles);
 });
 
