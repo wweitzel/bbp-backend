@@ -18,9 +18,13 @@ module.exports = {
     }
   },
   test: {
-    client: 'sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
+    client: 'pg',
+    connection: {
+      port: 5433,
+      database: process.env.POSTGRES_TEST_DB,
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD
+    },
     migrations: {
       directory: './db/migrations',
     },

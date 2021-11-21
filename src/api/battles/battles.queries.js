@@ -1,6 +1,6 @@
-const db = require('../db');
+const db = require('../../db');
 
-const tableNames = require('../constants/tableNames');
+const tableNames = require('../../constants/tableNames');
 
 const fields = ['id', 'streamer_id'];
 

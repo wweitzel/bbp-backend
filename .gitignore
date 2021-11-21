@@ -72,6 +72,8 @@ typings/
 # Serverless directories
 .serverless
 
+# End of generated .gitignore
+
 docker-data
 
 .DS_Store

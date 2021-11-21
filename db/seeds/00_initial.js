@@ -1,21 +1,31 @@
 const tableNames = require('../../src/constants/tableNames');
 
 exports.seed = async (knex) => {
-  await knex(tableNames.battle).del();
+  await knex(tableNames.battle_submission).truncate();
+  await knex(tableNames.battle).truncate();
+  await knex(tableNames.user).del();
 
-  const battle = {
-    streamer_id: 'chrispunsalan'
-  };
-  const battle2 = {
-    streamer_id: 'chrispunsalan'
-  };
-  const battle3 = {
-    streamer_id: 'chrispunsalan'
+  const user = {
+    twitch_user_id: '1',
+    twitch_username: 'chrispunsalan',
+    streamer: true
   };
 
-  const createdBattles = await knex(tableNames.battle)
-    .insert([battle, battle2, battle3])
+  await knex(tableNames.user)
+    .insert(user)
     .returning('*');
 
-  console.log('Battles Created:', createdBattles);
+  const battle = {
+    streamer_id: '1'
+  };
+  const battle2 = {
+    streamer_id: '1'
+  };
+  const battle3 = {
+    streamer_id: '1'
+  };
+
+  await knex(tableNames.battle)
+    .insert([battle, battle2, battle3])
+    .returning('*');
 };
