@@ -10,7 +10,7 @@ module.exports = {
   },
 
   async get(id) {
-    return await db(tableNames.battle)
+    return db(tableNames.battle)
       .select(fields)
       .where(
         { id }

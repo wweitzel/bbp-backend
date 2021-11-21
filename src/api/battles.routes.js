@@ -17,9 +17,8 @@ router.get('/:id', async (req, res, next) => {
     }
     return next();
   } catch (error) {
-    next(error);
+    return next(error);
   }
-  
 });
 
 module.exports = router;

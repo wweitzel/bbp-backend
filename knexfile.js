@@ -18,13 +18,9 @@ module.exports = {
     }
   },
   test: {
-    client: 'pg',
-    connection: {
-      // TODO: update postgres container to create test db also
-      database: process.env.POSTGRES_TEST_DB,
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD
-    },
+    client: 'sqlite3',
+    connection: ':memory:',
+    useNullAsDefault: true,
     migrations: {
       directory: './db/migrations',
     },
