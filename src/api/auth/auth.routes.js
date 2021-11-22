@@ -1,7 +1,6 @@
 const express = require('express');
 
 const fetch = require('node-fetch');
-const apiKeys = require('../../../api-keys/keys');
 const auth = require('./auth.queries');
 const User = require('../users/users.model');
 
@@ -9,8 +8,8 @@ const router = express.Router();
 
 router.get('/authenticate', async (req, res) => {
   const response = await fetch('https://id.twitch.tv/oauth2/token'
-  + '?client_id=' + apiKeys.TWITCH_CLIENT_ID
-  + '&client_secret=' + apiKeys.TWITCH_CLIENT_SECRET
+  + '?client_id=' + process.env.TWITCH_CLIENT_ID
+  + '&client_secret=' + process.env.TWITCH_CLIENT_SECRET
   + '&grant_type=authorization_code'
   + '&redirect_uri=http://localhost:5000/api/v1/auth/authenticate'
   + '&code=' + req.query.code, { method: 'post' });
