@@ -1,6 +1,7 @@
 const db = require('../../db');
 
 const tableNames = require('../../constants/tableNames');
+const Battle = require('./battles.model');
 
 const fields = ['id', 'streamer_id'];
 
@@ -9,11 +10,15 @@ module.exports = {
     return db(tableNames.battle).select(fields);
   },
 
-  async get(id) {
+  get(id) {
     return db(tableNames.battle)
       .select(fields)
       .where(
         { id }
       ).first();
+  },
+
+  create(battle) {
+    return Battle.query().insert(battle);
   }
 };

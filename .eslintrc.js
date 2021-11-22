@@ -1,5 +1,6 @@
 module.exports = {
   env: {
+    es6: true,
     jest: true,
   },
   extends: 'airbnb-base',
@@ -9,6 +10,7 @@ module.exports = {
     'no-param-reassign': 0,
     'no-return-assign': 0,
     'no-console': 0,
+    'prefer-template': 0,
     camelcase: 0,
   }
 };

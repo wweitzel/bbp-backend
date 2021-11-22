@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Battle Submissions",
+  "description": "The Battle Submissions.",
+  "required": [
+    "battle_id",
+    "submitter_id",
+    "soundcloud_link"
+  ],
+  "properties": {
+    "battle_id": {
+      "$id": "#/properties/battle_id",
+      "type": "integer",
+      "title": "The Battle ID."
+    },
+    "submitter_id": {
+      "$id": "#/properties/submitter_id",
+      "type": "string",
+      "title": "The submitters twtich id."
+    },
+    "soundcloud_link": {
+      "$id": "#/properties/soundcloud_link",
+      "type": "string",
+      "title": "Soundcloud link to the beat."
+    }
+  },
+  "additionalProperties": true
+}

@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
   const battles = await queries.find();
   const ids = new Set(battles.map((battle) => battle.streamer_id));
   const promises = [];
+  // TODO: Should be able to get all users in one query instead of multiple
   ids.forEach(async (id) => {
     promises.push(User.query()
       .where('twitch_user_id', id)
@@ -35,6 +36,15 @@ router.get('/:id', async (req, res, next) => {
     return next();
   } catch (error) {
     return next(error);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const battle = await queries.create(req.body);
+    res.json(battle);
+  } catch (error) {
+    next(error);
   }
 });
 

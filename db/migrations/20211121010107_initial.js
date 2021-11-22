@@ -17,7 +17,7 @@ exports.up = async (knex) => {
   await knex.schema.createTable(tableNames.battle, (table) => {
     table.increments().notNullable();
     table.string('streamer_id').notNullable();
-    table.foreign('streamer_id').references('twitch_user_id').inTable(tableNames.user);
+    table.foreign('streamer_id').references('twitch_user_id').inTable(tableNames.user).onDelete('CASCADE');
     table.timestamp('start_time').defaultTo(knex.fn.now());
     addDefaultColumns(table);
   });
@@ -25,8 +25,9 @@ exports.up = async (knex) => {
   await knex.schema.createTable(tableNames.battle_submission, (table) => {
     table.integer('battle_id').notNullable();
     table.string('submitter_id').notNullable();
-    table.primary('battle_id', 'submitter_id');
-    table.foreign('submitter_id').references('twitch_user_id').inTable(tableNames.user);
+    table.primary(['battle_id', 'submitter_id']);
+    table.foreign('battle_id').references('id').inTable(tableNames.battle).onDelete('CASCADE');
+    table.foreign('submitter_id').references('twitch_user_id').inTable(tableNames.user).onDelete('CASCADE');
     table.text('soundcloud_link').notNullable();
     table.integer('votes');
     table.integer('rank');

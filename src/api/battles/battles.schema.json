@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "Battle",
+  "description": "The Battles.",
+  "required": [
+    "streamer_id"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The ID."
+    },
+    "streamer_id": {
+      "$id": "#/properties/streamer_id",
+      "type": "string",
+      "title": "The streamer_id."
+      
+    },
+    "streamer_username": {
+      "$id": "#/properties/streamer_username",
+      "type": "string",
+      "title": "The streamer_username schema",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "",
+      "examples": [
+        "chrispunsalan"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

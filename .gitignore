@@ -75,5 +75,6 @@ typings/
 # End of generated .gitignore
 
 docker-data
+api-keys
 
 .DS_Store

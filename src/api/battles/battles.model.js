@@ -1,20 +1,16 @@
 const { Model } = require('objection');
 
 const tableNames = require('../../constants/tableNames');
-const schema = require('./users.schema.json');
+const schema = require('./battles.schema.json');
 
-class User extends Model {
+class Battle extends Model {
   static get tableName() {
-    return tableNames.user;
+    return tableNames.battle;
   }
 
   static get jsonSchema() {
     return schema;
   }
-
-  static get idColumn() {
-    return 'twitch_user_id';
-  }
 }
 
-module.exports = User;
+module.exports = Battle;

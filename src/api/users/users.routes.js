@@ -1,19 +1,16 @@
 const express = require('express');
 
-const User = require('./users.model');
+const users = require('./users.queries');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const users = await User.query();
-  res.json(users);
+  res.json(await users.find());
 });
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const user = await User.query()
-      .where('twitch_user_id', req.params.id)
-      .first();
+    const user = await users.get(req.params.id);
     return res.json(user);
   } catch (error) {
     return next(error);

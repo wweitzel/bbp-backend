@@ -1,11 +1,11 @@
 const { Model } = require('objection');
 
 const tableNames = require('../../constants/tableNames');
-const schema = require('./users.schema.json');
+const schema = require('./battle-submissions.schema.json');
 
-class User extends Model {
+class BattleSubmission extends Model {
   static get tableName() {
-    return tableNames.user;
+    return tableNames.battle_submission;
   }
 
   static get jsonSchema() {
@@ -13,8 +13,8 @@ class User extends Model {
   }
 
   static get idColumn() {
-    return 'twitch_user_id';
+    return ['battle_id', 'submitter_id'];
   }
 }
 
-module.exports = User;
+module.exports = BattleSubmission;

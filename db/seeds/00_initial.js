@@ -2,7 +2,7 @@ const tableNames = require('../../src/constants/tableNames');
 
 exports.seed = async (knex) => {
   await knex(tableNames.battle_submission).truncate();
-  await knex(tableNames.battle).truncate();
+  await knex.raw('TRUNCATE TABLE battle RESTART IDENTITY CASCADE');
   await knex(tableNames.user).del();
 
   const user = {
@@ -11,8 +11,14 @@ exports.seed = async (knex) => {
     streamer: true
   };
 
+  const user2 = {
+    twitch_user_id: '2',
+    twitch_username: 'someguy',
+    streamer: false
+  };
+
   await knex(tableNames.user)
-    .insert(user)
+    .insert([user, user2])
     .returning('*');
 
   const battle = {
@@ -27,5 +33,21 @@ exports.seed = async (knex) => {
 
   await knex(tableNames.battle)
     .insert([battle, battle2, battle3])
+    .returning('*');
+
+  const submission = {
+    battle_id: 1,
+    submitter_id: 1,
+    soundcloud_link: 'dope track'
+  };
+
+  const submission2 = {
+    battle_id: 1,
+    submitter_id: 2,
+    soundcloud_link: 'super sick track'
+  };
+
+  await knex(tableNames.battle_submission)
+    .insert([submission, submission2])
     .returning('*');
 };

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "title": "User",
+  "description": "The User",
+  "examples": [
+    {
+      "twitch_user_id": "1",
+      "twitch_username": "chrispunsalan",
+      "streamer": true,
+      "created_at": "2021-11-21T22:03:00.867Z",
+      "updated_at": "2021-11-21T22:03:00.867Z"
+    }
+  ],
+  "required": [
+    "twitch_user_id",
+    "twitch_username",
+    "streamer"
+  ],
+  "properties": {
+    "twitch_user_id": {
+      "$id": "#/properties/twitch_user_id",
+      "type": "string",
+      "title": "The ID of the user."
+    },
+    "twitch_username": {
+      "$id": "#/properties/twitch_username",
+      "type": "string",
+      "title": "The users username."
+    },
+    "streamer": {
+      "$id": "#/properties/streamer",
+      "type": "boolean",
+      "title": "If the user is a streamer or not.",
+      "default": false
+    },
+    "created_at": {
+      "$id": "#/properties/created_at",
+      "type": "string",
+      "title": "The creation timestamp of the user."
+    },
+    "updated_at": {
+      "$id": "#/properties/updated_at",
+      "type": "string",
+      "title": "The timestamp the user was last updated."
+    }
+  },
+  "additionalProperties": true
+}
