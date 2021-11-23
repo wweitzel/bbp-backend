@@ -63,8 +63,8 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  // await knex.schema.dropTable(dbNames.tableNames.game);
-  // await knex.schema.dropTable(dbNames.tableNames.bracket);
+  await knex.schema.dropTable(dbNames.tableNames.game);
+  await knex.schema.dropTable(dbNames.tableNames.bracket);
   await knex.schema.dropTable(dbNames.tableNames.submission);
   await knex.schema.dropTable(dbNames.tableNames.battle);
   await knex.schema.dropTable(dbNames.tableNames.user);
