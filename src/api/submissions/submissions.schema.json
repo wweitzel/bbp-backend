@@ -4,22 +4,22 @@
   "title": "Battle Submissions",
   "description": "The Battle Submissions.",
   "required": [
-    "battle_id",
-    "submitter_id",
-    "soundcloud_link"
+    "battleId",
+    "submitterId",
+    "soundcloudLink"
   ],
   "properties": {
-    "battle_id": {
+    "battleId": {
       "$id": "#/properties/battle_id",
       "type": "integer",
       "title": "The Battle ID."
     },
-    "submitter_id": {
+    "submitterId": {
       "$id": "#/properties/submitter_id",
       "type": "string",
       "title": "The submitters twtich id."
     },
-    "soundcloud_link": {
+    "soundcloudLink": {
       "$id": "#/properties/soundcloud_link",
       "type": "string",
       "title": "Soundcloud link to the beat."

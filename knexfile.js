@@ -2,6 +2,8 @@
 
 require('dotenv').config();
 
+const { knexSnakeCaseMappers } = require('objection');
+
 module.exports = {
   development: {
     client: 'pg',
@@ -15,7 +17,8 @@ module.exports = {
     },
     seeds: {
       directory: './db/seeds',
-    }
+    },
+    ...knexSnakeCaseMappers()
   },
   test: {
     client: 'pg',
@@ -30,7 +33,8 @@ module.exports = {
     },
     seeds: {
       directory: './db/seeds',
-    }
+    },
+    ...knexSnakeCaseMappers()
   },
   production: {
     client: 'pg',
@@ -45,7 +49,8 @@ module.exports = {
     },
     seeds: {
       directory: './db/seeds',
-    }
+    },
+    ...knexSnakeCaseMappers()
   }
 
 };

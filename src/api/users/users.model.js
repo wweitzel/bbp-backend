@@ -1,11 +1,11 @@
-const { Model } = require('objection');
+const BaseModel = require('../../lib/baseModel');
 
-const tableNames = require('../../constants/tableNames');
+const dbNames = require('../../constants/dbNames');
 const schema = require('./users.schema.json');
 
-class User extends Model {
+class User extends BaseModel {
   static get tableName() {
-    return tableNames.user;
+    return dbNames.tableNames.user;
   }
 
   static get jsonSchema() {
@@ -13,7 +13,7 @@ class User extends Model {
   }
 
   static get idColumn() {
-    return 'twitch_user_id';
+    return dbNames.userColumns.twitchUserId;
   }
 }
 

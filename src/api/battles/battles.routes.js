@@ -1,35 +1,60 @@
 const express = require('express');
 
-const queries = require('./battles.queries');
 const User = require('../users/users.model');
+const Battle = require('./battles.model');
+const dbNames = require('../../constants/dbNames');
+const submissions = require('../submissions/submissions.routes');
 
-const router = express.Router();
+const router = express.Router({
+  mergeParams: true
+});
 
-router.get('/', async (req, res) => {
-  const battles = await queries.find();
-  const ids = new Set(battles.map((battle) => battle.streamer_id));
-  const promises = [];
-  // TODO: Should be able to get all users in one query instead of multiple
-  ids.forEach(async (id) => {
-    promises.push(User.query()
-      .where('twitch_user_id', id)
-      .first());
-  });
-  const idToUser = new Map();
-  await Promise.all(promises).then((users) => {
-    users.forEach((user) => {
-      idToUser.set(user.twitch_user_id, user);
+const fields = [
+  dbNames.battleColumns.id,
+  dbNames.battleColumns.streamerId,
+  dbNames.battleColumns.endTime,
+  dbNames.battleColumns.createdAt
+];
+
+router.use('/:battle_id/submissions', submissions);
+
+router.get('/', async (req, res, next) => {
+  try {
+    const battles = await Battle.query()
+      .select(fields)
+      .where(dbNames.battleColumns.deletedAt, null);
+    const ids = new Set(battles.map((battle) => battle.streamerId));
+    const promises = [];
+    // TODO: Should be able to get all users in one query instead of multiple
+    ids.forEach(async (id) => {
+      promises.push(User.query()
+        .where(dbNames.userColumns.twitchUserId, id)
+        .andWhere(dbNames.userColumns.deletedAt, null)
+        .first());
     });
-  });
-  battles.forEach((battle) => {
-    battle.streamer_username = idToUser.get(battle.streamer_id).twitch_username;
-  });
-  res.json(battles);
+    const idToUser = new Map();
+    await Promise.all(promises).then((users) => {
+      users.forEach((user) => {
+        idToUser.set(user.twitchUserId, user);
+      });
+    });
+
+    battles.forEach((battle) => {
+      battle.streamerUsername = idToUser.get(battle.streamerId).twitchUsername;
+    });
+    res.json(battles);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const battle = await queries.get(req.params.id);
+    const battle = await Battle.query()
+      .select(fields)
+      .where(dbNames.battleColumns.id, req.params.id)
+      .andWhere(dbNames.userColumns.deletedAt, null)
+      .first();
     if (battle) {
       return res.json(battle);
     }
@@ -41,7 +66,9 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const battle = await queries.create(req.body);
+    const battle = await Battle.query()
+      .insert(req.body)
+      .returning(fields);
     res.json(battle);
   } catch (error) {
     next(error);

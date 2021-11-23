@@ -1,53 +1,61 @@
-const tableNames = require('../../src/constants/tableNames');
+const dbNames = require('../../src/constants/dbNames');
 
 exports.seed = async (knex) => {
-  await knex(tableNames.battle_submission).truncate();
+  await knex(dbNames.tableNames.submission).truncate();
   await knex.raw('TRUNCATE TABLE battle RESTART IDENTITY CASCADE');
-  await knex(tableNames.user).del();
+  await knex(dbNames.tableNames.user).del();
 
   const user = {
-    twitch_user_id: '1',
-    twitch_username: 'chrispunsalan',
+    twitchUserId: '1',
+    twitchUsername: 'chrispunsalan',
     streamer: true
   };
 
   const user2 = {
-    twitch_user_id: '2',
-    twitch_username: 'someguy',
+    twitchUserId: '2',
+    twitchUsername: 'someguy',
     streamer: false
   };
 
-  await knex(tableNames.user)
-    .insert([user, user2])
+  const user3 = {
+    twitchUserId: '3',
+    twitchUsername: 'alextumay',
+    streamer: false
+  };
+
+  await knex(dbNames.tableNames.user)
+    .insert([user, user2, user3])
     .returning('*');
 
   const battle = {
-    streamer_id: '1'
+    streamerId: '1',
+    endTime: new Date(new Date().getTime() + (1 * 60 * 60 * 1000))
   };
   const battle2 = {
-    streamer_id: '1'
+    streamerId: '1',
+    endTime: new Date(new Date().getTime() + (1 * 60 * 60 * 1000))
   };
   const battle3 = {
-    streamer_id: '1'
+    streamerId: '1'
   };
 
-  await knex(tableNames.battle)
+  await knex(dbNames.tableNames.battle)
     .insert([battle, battle2, battle3])
     .returning('*');
 
   const submission = {
-    battle_id: 1,
-    submitter_id: 1,
-    soundcloud_link: 'dope track'
+    battleId: 1,
+    submitterId: 1,
+    soundcloudLink: 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk'
   };
 
   const submission2 = {
-    battle_id: 1,
-    submitter_id: 2,
-    soundcloud_link: 'super sick track'
+    battleId: 1,
+    submitterId: 2,
+    soundcloudLink: 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3'
   };
 
-  await knex(tableNames.battle_submission)
+  await knex(dbNames.tableNames.submission)
     .insert([submission, submission2])
     .returning('*');
 };

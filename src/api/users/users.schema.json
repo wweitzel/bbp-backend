@@ -13,17 +13,17 @@
     }
   ],
   "required": [
-    "twitch_user_id",
-    "twitch_username",
+    "twitchUserId",
+    "twitchUsername",
     "streamer"
   ],
   "properties": {
-    "twitch_user_id": {
+    "twitchUserId": {
       "$id": "#/properties/twitch_user_id",
       "type": "string",
       "title": "The ID of the user."
     },
-    "twitch_username": {
+    "twitchUsername": {
       "$id": "#/properties/twitch_username",
       "type": "string",
       "title": "The users username."
@@ -34,12 +34,12 @@
       "title": "If the user is a streamer or not.",
       "default": false
     },
-    "created_at": {
+    "createdAt": {
       "$id": "#/properties/created_at",
       "type": "string",
       "title": "The creation timestamp of the user."
     },
-    "updated_at": {
+    "updatedAt": {
       "$id": "#/properties/updated_at",
       "type": "string",
       "title": "The timestamp the user was last updated."

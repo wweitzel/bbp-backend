@@ -10,6 +10,8 @@ const api = require('./api');
 
 const app = express();
 
+require('./db');
+
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());

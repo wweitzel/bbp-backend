@@ -3,7 +3,7 @@
   "type": "object",
   "title": "Battle Schema",
   "required": [
-    "streamer_id"
+    "streamerId"
   ],
   "properties": {
     "id": {
@@ -11,11 +11,15 @@
       "type": "integer",
       "title": "Battle id"
     },
-    "streamer_id": {
+    "streamerId": {
       "$id": "#/properties/streamer_id",
       "type": "string",
       "title": "Streamer id"
-      
+    },
+    "endTime": {
+      "$id": "#/properties/end_time",
+      "type": "string",
+      "title": "End time"
     }
   },
   "additionalProperties": true

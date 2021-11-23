@@ -1,4 +1,4 @@
-const tableNames = require('../../src/constants/tableNames');
+const dbNames = require('../../src/constants/dbNames');
 
 function addDefaultColumns(table) {
   table.timestamps(false, true);
@@ -6,7 +6,7 @@ function addDefaultColumns(table) {
 }
 
 exports.up = async (knex) => {
-  await knex.schema.createTable(tableNames.user, (table) => {
+  await knex.schema.createTable(dbNames.tableNames.user, (table) => {
     table.string('twitch_user_id');
     table.primary('twitch_user_id');
     table.string('twitch_username').notNullable();
@@ -14,20 +14,20 @@ exports.up = async (knex) => {
     addDefaultColumns(table);
   });
 
-  await knex.schema.createTable(tableNames.battle, (table) => {
+  await knex.schema.createTable(dbNames.tableNames.battle, (table) => {
     table.increments().notNullable();
     table.string('streamer_id').notNullable();
-    table.foreign('streamer_id').references('twitch_user_id').inTable(tableNames.user).onDelete('CASCADE');
-    table.timestamp('start_time').defaultTo(knex.fn.now());
+    table.foreign('streamer_id').references('twitch_user_id').inTable(dbNames.tableNames.user).onDelete('CASCADE');
+    table.timestamp('end_time');
     addDefaultColumns(table);
   });
 
-  await knex.schema.createTable(tableNames.battle_submission, (table) => {
+  await knex.schema.createTable(dbNames.tableNames.submission, (table) => {
     table.integer('battle_id').notNullable();
     table.string('submitter_id').notNullable();
     table.primary(['battle_id', 'submitter_id']);
-    table.foreign('battle_id').references('id').inTable(tableNames.battle).onDelete('CASCADE');
-    table.foreign('submitter_id').references('twitch_user_id').inTable(tableNames.user).onDelete('CASCADE');
+    table.foreign('battle_id').references('id').inTable(dbNames.tableNames.battle).onDelete('CASCADE');
+    table.foreign('submitter_id').references('twitch_user_id').inTable(dbNames.tableNames.user).onDelete('CASCADE');
     table.text('soundcloud_link').notNullable();
     table.integer('votes');
     table.integer('rank');
@@ -36,7 +36,7 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  await knex.schema.dropTable(tableNames.battle_submission);
-  await knex.schema.dropTable(tableNames.battle);
-  await knex.schema.dropTable(tableNames.user);
+  await knex.schema.dropTable(dbNames.tableNames.submission);
+  await knex.schema.dropTable(dbNames.tableNames.battle);
+  await knex.schema.dropTable(dbNames.tableNames.user);
 };

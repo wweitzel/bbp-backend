@@ -1,11 +1,11 @@
-const { Model } = require('objection');
+const BaseModel = require('../../lib/baseModel');
 
-const tableNames = require('../../constants/tableNames');
+const dbNames = require('../../constants/dbNames');
 const schema = require('./battles.schema.json');
 
-class Battle extends Model {
+class Battle extends BaseModel {
   static get tableName() {
-    return tableNames.battle;
+    return dbNames.tableNames.battle;
   }
 
   static get jsonSchema() {
