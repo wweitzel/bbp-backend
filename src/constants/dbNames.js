@@ -2,6 +2,8 @@ const tableNames = {
   user: 'user',
   battle: 'battle',
   submission: 'battle_submission',
+  bracket: 'bracket',
+  game: 'game'
 };
 
 const orderedTableNames = {
@@ -39,10 +41,37 @@ const submissionColumns = {
   deletedAt: 'deleted_at'
 };
 
+const bracketColumns = {
+  id: 'id',
+  battleId: 'battle_id',
+  bracketType: 'bracket_type'
+};
+
+const gameColumns = {
+  id: 'id',
+  battleId: 'battle_id',
+  bracketType: 'bracket_type',
+  parentGameId: 'parent_game_id',
+  roundNumber: 'round_number',
+  playerOneUserId: 'player_one_user_id',
+  playerTwoUserId: 'player_two_user_id',
+  playerOneUsername: 'player_one_username',
+  playerTwoUsername: 'player_two_username',
+  playerOneScore: 'player_one_score',
+  playerTwoScore: 'player_two_score',
+  playerOneParentGameId: 'player_one_parent_game_id',
+  playerTwoParentGameId: 'player_two_parent_game_id',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  deletedAt: 'deleted_at'
+};
+
 module.exports = {
   tableNames,
   orderedTableNames,
   userColumns,
   battleColumns,
-  submissionColumns
+  submissionColumns,
+  bracketColumns,
+  gameColumns
 };

@@ -33,9 +33,38 @@ exports.up = async (knex) => {
     table.integer(dbNames.submissionColumns.rank);
     addDefaultColumns(table);
   });
+
+  await knex.schema.createTable(dbNames.tableNames.bracket, (table) => {
+    table.integer(dbNames.bracketColumns.battleId).notNullable();
+    table.string(dbNames.bracketColumns.bracketType).notNullable();
+    table.unique(dbNames.bracketColumns.bracketType);
+    table.primary([dbNames.bracketColumns.battleId, dbNames.bracketColumns.bracketType]);
+    table.foreign(dbNames.bracketColumns.battleId).references(dbNames.battleColumns.id).inTable(dbNames.tableNames.battle).onDelete('CASCADE');
+    addDefaultColumns(table);
+  });
+
+  await knex.schema.createTable(dbNames.tableNames.game, (table) => {
+    table.increments().notNullable();
+    table.integer(dbNames.gameColumns.battleId).notNullable();
+    table.string(dbNames.gameColumns.bracketType).notNullable();
+    table.integer(dbNames.gameColumns.roundNumber).notNullable();
+    table.integer(dbNames.gameColumns.playerOneParentGameId);
+    table.integer(dbNames.gameColumns.playerTwoParentGameId);
+    table.foreign(dbNames.gameColumns.battleId).references(dbNames.battleColumns.id).inTable(dbNames.tableNames.battle).onDelete('CASCADE');
+    table.foreign(dbNames.gameColumns.bracketType).references(dbNames.bracketColumns.bracketType).inTable(dbNames.tableNames.bracket).onDelete('CASCADE');
+    table.string(dbNames.gameColumns.playerOneUserId);
+    table.string(dbNames.gameColumns.playerTwoUserId);
+    table.string(dbNames.gameColumns.playerOneUsername);
+    table.string(dbNames.gameColumns.playerTwoUsername);
+    table.string(dbNames.gameColumns.playerOneScore);
+    table.string(dbNames.gameColumns.playerTwoScore);
+    addDefaultColumns(table);
+  });
 };
 
 exports.down = async (knex) => {
+  await knex.schema.dropTable(dbNames.tableNames.game);
+  await knex.schema.dropTable(dbNames.tableNames.bracket);
   await knex.schema.dropTable(dbNames.tableNames.submission);
   await knex.schema.dropTable(dbNames.tableNames.battle);
   await knex.schema.dropTable(dbNames.tableNames.user);

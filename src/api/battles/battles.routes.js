@@ -4,6 +4,7 @@ const User = require('../users/users.model');
 const Battle = require('./battles.model');
 const dbNames = require('../../constants/dbNames');
 const submissions = require('../submissions/submissions.routes');
+const brackets = require('../brackets/brackets.routes');
 
 const router = express.Router({
   mergeParams: true
@@ -17,6 +18,7 @@ const fields = [
 ];
 
 router.use('/:battle_id/submissions', submissions);
+router.use('/:battle_id/brackets', brackets);
 
 router.get('/', async (req, res, next) => {
   try {
