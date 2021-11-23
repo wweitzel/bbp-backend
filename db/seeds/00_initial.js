@@ -2,6 +2,7 @@ const dbNames = require('../../src/constants/dbNames');
 
 exports.seed = async (knex) => {
   await knex(dbNames.tableNames.submission).truncate();
+  // TODO: Find way to not have to use raw here since raw won't be portable
   await knex.raw('TRUNCATE TABLE battle RESTART IDENTITY CASCADE');
   await knex(dbNames.tableNames.user).del();
 

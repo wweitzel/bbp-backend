@@ -7,30 +7,30 @@ function addDefaultColumns(table) {
 
 exports.up = async (knex) => {
   await knex.schema.createTable(dbNames.tableNames.user, (table) => {
-    table.string('twitch_user_id');
-    table.primary('twitch_user_id');
-    table.string('twitch_username').notNullable();
-    table.boolean('streamer').defaultTo(false);
+    table.string(dbNames.userColumns.twitchUserId);
+    table.primary(dbNames.userColumns.twitchUserId);
+    table.string(dbNames.userColumns.twtichUsername).notNullable();
+    table.boolean(dbNames.userColumns.streamer).defaultTo(false);
     addDefaultColumns(table);
   });
 
   await knex.schema.createTable(dbNames.tableNames.battle, (table) => {
     table.increments().notNullable();
-    table.string('streamer_id').notNullable();
-    table.foreign('streamer_id').references('twitch_user_id').inTable(dbNames.tableNames.user).onDelete('CASCADE');
-    table.timestamp('end_time');
+    table.string(dbNames.battleColumns.streamerId).notNullable();
+    table.foreign(dbNames.battleColumns.streamerId).references(dbNames.userColumns.twitchUserId).inTable(dbNames.tableNames.user).onDelete('CASCADE');
+    table.timestamp(dbNames.battleColumns.endTime);
     addDefaultColumns(table);
   });
 
   await knex.schema.createTable(dbNames.tableNames.submission, (table) => {
-    table.integer('battle_id').notNullable();
-    table.string('submitter_id').notNullable();
-    table.primary(['battle_id', 'submitter_id']);
-    table.foreign('battle_id').references('id').inTable(dbNames.tableNames.battle).onDelete('CASCADE');
-    table.foreign('submitter_id').references('twitch_user_id').inTable(dbNames.tableNames.user).onDelete('CASCADE');
-    table.text('soundcloud_link').notNullable();
-    table.integer('votes');
-    table.integer('rank');
+    table.integer(dbNames.submissionColumns.battleId).notNullable();
+    table.string(dbNames.submissionColumns.submitterId).notNullable();
+    table.primary([dbNames.submissionColumns.battleId, dbNames.submissionColumns.submitterId]);
+    table.foreign(dbNames.submissionColumns.battleId).references(dbNames.battleColumns.id).inTable(dbNames.tableNames.battle).onDelete('CASCADE');
+    table.foreign(dbNames.submissionColumns.submitterId).references(dbNames.userColumns.twitchUserId).inTable(dbNames.tableNames.user).onDelete('CASCADE');
+    table.text(dbNames.submissionColumns.soundcloudLink).notNullable();
+    table.integer(dbNames.submissionColumns.votes);
+    table.integer(dbNames.submissionColumns.rank);
     addDefaultColumns(table);
   });
 };
