@@ -3,7 +3,8 @@ const tableNames = {
   battle: 'battle',
   submission: 'battle_submission',
   bracket: 'bracket',
-  game: 'game'
+  match: 'match',
+  partipant: 'particpant'
 };
 
 const orderedTableNames = {
@@ -44,23 +45,26 @@ const submissionColumns = {
 const bracketColumns = {
   id: 'id',
   battleId: 'battle_id',
-  bracketType: 'bracket_type'
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  deletedAt: 'deleted_at'
 };
 
-const gameColumns = {
+const matchColumns = {
   id: 'id',
-  battleId: 'battle_id',
-  bracketType: 'bracket_type',
-  parentGameId: 'parent_game_id',
-  roundNumber: 'round_number',
-  playerOneUserId: 'player_one_user_id',
-  playerTwoUserId: 'player_two_user_id',
-  playerOneUsername: 'player_one_username',
-  playerTwoUsername: 'player_two_username',
-  playerOneScore: 'player_one_score',
-  playerTwoScore: 'player_two_score',
-  playerOneParentGameId: 'player_one_parent_game_id',
-  playerTwoParentGameId: 'player_two_parent_game_id',
+  bracketId: 'bracket_id',
+  nextMatchId: 'next_match_id',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  deletedAt: 'deleted_at'
+};
+
+const participantColumns = {
+  id: 'id',
+  matchId: 'match_id',
+  name: 'name',
+  winner: 'winner',
+  resultText: 'result_text',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   deletedAt: 'deleted_at'
@@ -73,5 +77,6 @@ module.exports = {
   battleColumns,
   submissionColumns,
   bracketColumns,
-  gameColumns
+  matchColumns,
+  participantColumns
 };

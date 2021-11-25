@@ -11,6 +11,7 @@ module.exports = {
     'no-return-assign': 0,
     'no-console': 0,
     'prefer-template': 0,
+    'no-plusplus': 0,
     camelcase: 0,
   }
 };

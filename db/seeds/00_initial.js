@@ -1,4 +1,6 @@
 const dbNames = require('../../src/constants/dbNames');
+const matchMappings = require('../../src/constants/matchMappings');
+const rankMappings = require('../../src/constants/rankMappings');
 
 function createUser(twitchUserId, twitchUsername, streamer) {
   return { twitchUserId, twitchUsername, streamer };
@@ -14,49 +16,77 @@ function createBattle(streamerId, endTime) {
   return { streamerId, endTime };
 }
 
-function createGame(battleId, bracketType, playerOneParentGameId, playerTwoParentGameId,
-  roundNumber, playerOneUserId, playerTwoUserId, playerOneScore, playerTwoScore) {
-  return {
-    battleId,
-    bracketType,
-    playerOneParentGameId,
-    playerTwoParentGameId,
-    roundNumber,
-    playerOneUserId,
-    playerTwoUserId,
-    playerOneScore,
-    playerTwoScore
-  };
+function findMatch(matches, matchNumber) {
+  return matches.find((m) => m.matchNumber === matchNumber);
 }
 
-async function createBracket(knex) {
-  const [game1] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', null, null, 1, '9', '8', 0, 0)
-  ).returning('*');
-  const [game2] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', null, null, 1, '7', '10', 0, 0)
-  ).returning('*');
-  const [game3] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', null, game1.id, 2, '1', null, 0, 0)
-  ).returning('*');
-  const [game4] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', null, null, 2, '5', '4', 0, 0)
-  ).returning('*');
-  const [game5] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', null, null, 2, '3', '6', 0, 0)
-  ).returning('*');
-  const [game6] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', game2.id, null, 2, null, '2', 0, 0)
-  ).returning('*');
-  const [game7] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', game3.id, game4.id, 3, null, null, 0, 0)
-  ).returning('*');
-  const [game8] = await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', game5.id, game6.id, 3, null, null, 0, 0),
-  ).returning('*');
-  await knex(dbNames.tableNames.game).insert(
-    createGame(1, 'WINNERS', game7.id, game8.id, 4, null, null, 0, 0),
-  );
+function findMatchId(matches, submission) {
+  const { rank } = submission;
+  const matchNumber = rankMappings.get(10).get(rank);
+  const matchId = matches.find((m) => m.matchNumber === matchNumber).id;
+  return matchId;
+}
+
+async function createMatches(participantCount, bracketId, submissions, trx) {
+  const matches = [];
+  for (let i = 0; i < participantCount - 1; i++) {
+    matches.push({ bracketId });
+  }
+  const createdMatches = await trx(dbNames.tableNames.match).insert(matches).returning('*');
+
+  for (let i = 0; i < participantCount - 1; i++) {
+    createdMatches[i].matchNumber = i + 1;
+    createdMatches[i].nextMatchNumber = matchMappings.get(participantCount).get(i + 1);
+  }
+
+  const updatePromises = [];
+
+  for (let i = 0; i < participantCount - 1 - 1; i++) {
+    const nextMatch = findMatch(
+      createdMatches, matchMappings.get(participantCount).get(i + 1)
+    );
+    createdMatches[i].nextMatchId = nextMatch.id;
+    updatePromises.push(trx(dbNames.tableNames.match)
+      .where({ id: createdMatches[i].id })
+      .update({ nextMatchId: nextMatch.id }));
+  }
+
+  await Promise.all(updatePromises);
+
+  const userIds = submissions.map((s) => s.submitterId);
+
+  const users = await trx(dbNames.tableNames.user)
+    .select(dbNames.userColumns.twitchUserId, dbNames.userColumns.twtichUsername)
+    .whereIn(dbNames.userColumns.twitchUserId, Array.from(userIds))
+    .andWhere(dbNames.userColumns.deletedAt, null);
+
+  const idToUser = new Map();
+  users.forEach((user) => {
+    idToUser.set(user.twitchUserId, user);
+  });
+
+  const participants = [];
+
+  for (let i = 0; i < participantCount; i++) {
+    const participant = {
+      id: submissions[i].submitterId,
+      matchId: findMatchId(createdMatches, submissions[i]),
+      name: idToUser.get(submissions[i].submitterId).twitchUsername
+    };
+    participants.push(participant);
+  }
+
+  await trx(dbNames.tableNames.partipant).insert(participants).returning('*');
+}
+
+async function createBracket(knex, submissions) {
+  await knex.transaction(async (trx) => {
+    const bracket = {
+      battleId: 1
+    };
+    const [createdBracket] = await trx(dbNames.tableNames.bracket).insert(bracket).returning('*');
+    await createMatches(10, createdBracket.id, submissions, trx);
+  });
 }
 
 exports.seed = async (knex) => {
@@ -105,18 +135,9 @@ exports.seed = async (knex) => {
     createSubmission(1, '10', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 10)
   ];
 
-  await knex(dbNames.tableNames.submission)
+  const createdSubmissions = await knex(dbNames.tableNames.submission)
     .insert(submissions)
     .returning('*');
 
-  const bracket = {
-    battleId: '1',
-    bracketType: 'WINNERS'
-  };
-
-  await knex(dbNames.tableNames.bracket)
-    .insert(bracket)
-    .returning('*');
-
-  await createBracket(knex);
+  await createBracket(knex, createdSubmissions);
 };
