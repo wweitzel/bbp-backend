@@ -22,7 +22,7 @@ function findMatch(matches, matchNumber) {
 
 function findMatchId(matches, submission) {
   const { rank } = submission;
-  const matchNumber = rankMappings.get(10).get(rank);
+  const matchNumber = rankMappings.get(8).get(rank);
   const matchId = matches.find((m) => m.matchNumber === matchNumber).id;
   return matchId;
 }
@@ -85,7 +85,9 @@ async function createBracket(knex, submissions) {
       battleId: 1
     };
     const [createdBracket] = await trx(dbNames.tableNames.bracket).insert(bracket).returning('*');
-    await createMatches(10, createdBracket.id, submissions, trx);
+    // TODO: We are creating 8 matches but have 10 submissions. This works by chance
+    // because the seed puts the ranks in order, but we should fix it
+    await createMatches(8, createdBracket.id, submissions, trx);
   });
 }
 

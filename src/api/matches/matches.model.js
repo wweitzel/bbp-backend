@@ -2,10 +2,10 @@ const BaseModel = require('../../lib/baseModel');
 
 const dbNames = require('../../constants/dbNames');
 
-class Bracket extends BaseModel {
+class Match extends BaseModel {
   static get tableName() {
-    return dbNames.tableNames.bracket;
+    return dbNames.tableNames.match;
   }
 }
 
-module.exports = Bracket;
+module.exports = Match;

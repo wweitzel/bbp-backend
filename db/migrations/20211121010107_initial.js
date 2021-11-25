@@ -55,7 +55,7 @@ exports.up = async (knex) => {
     table.primary([dbNames.participantColumns.id, dbNames.participantColumns.matchId]);
     table.foreign(dbNames.participantColumns.id).references(dbNames.userColumns.twitchUserId).inTable(dbNames.tableNames.user).onDelete('CASCADE');
     table.foreign(dbNames.participantColumns.matchId).references(dbNames.matchColumns.id).inTable(dbNames.tableNames.match).onDelete('CASCADE');
-    table.boolean(dbNames.participantColumns.winner);
+    table.boolean(dbNames.participantColumns.isWinner);
     table.string(dbNames.participantColumns.resultText);
     table.string(dbNames.participantColumns.name);
     addDefaultColumns(table);

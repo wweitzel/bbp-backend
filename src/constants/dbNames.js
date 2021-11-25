@@ -63,7 +63,7 @@ const participantColumns = {
   id: 'id',
   matchId: 'match_id',
   name: 'name',
-  winner: 'winner',
+  isWinner: 'is_winner',
   resultText: 'result_text',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
