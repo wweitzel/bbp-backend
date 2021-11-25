@@ -1,7 +1,7 @@
 const tableNames = {
   user: 'user',
   battle: 'battle',
-  submission: 'submission',
+  submission: 'battle_submission',
   bracket: 'bracket',
   match: 'match',
   partipant: 'particpant'
