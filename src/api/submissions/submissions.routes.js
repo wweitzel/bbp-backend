@@ -11,6 +11,7 @@ const fields = [
   dbNames.submissionColumns.soundcloudLink,
   dbNames.submissionColumns.votes,
   dbNames.submissionColumns.rank,
+  dbNames.submissionColumns.submitterUsername,
   dbNames.submissionColumns.createdAt
 ];
 
