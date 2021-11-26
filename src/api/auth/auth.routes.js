@@ -45,14 +45,14 @@ router.get('/authenticate', async (req, res) => {
       httpOnly: false,
       secure: false,
       signed: false,
-      sameSite: false
+      sameSite: 'none'
     });
 
     res.cookie('twitch_refresh_token', refresh_token, {
       httpOnly: false,
       secure: false,
       signed: false,
-      sameSite: false
+      sameSite: 'none'
     });
   }
 
