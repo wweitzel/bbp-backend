@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 require('dotenv').config();
@@ -14,7 +15,12 @@ require('./db');
 
 app.use(morgan('dev'));
 app.use(helmet());
-app.use(cors());
+app.use(cookieParser('keyboard_cat'));
+app.use(cors({
+  // TODO: Probably dont want to include localhost in prod
+  origin: ['http://localhost:3000', process.env.FRONTEND_ORIGIN],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get('/', (req, res) => {
