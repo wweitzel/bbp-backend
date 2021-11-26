@@ -1,5 +1,7 @@
 const express = require('express');
 
+const middleWares = require('../middlewares');
+
 const auth = require('./auth/auth.routes');
 const users = require('./users/users.routes');
 const battles = require('./battles/battles.routes');
@@ -13,7 +15,12 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', auth);
-router.use('/users', users);
-router.use('/battles', battles);
+if (process.env.ENABLE_AUTH === 'true') {
+  router.use('/users', middleWares.ensureLoggedIn, users);
+  router.use('/battles', middleWares.ensureLoggedIn, battles);
+} else {
+  router.use('/users', users);
+  router.use('/battles', battles);
+}
 
 module.exports = router;
