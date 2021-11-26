@@ -41,19 +41,17 @@ router.get('/:bracket_id', async (req, res) => {
     .where(dbNames.bracketColumns.id, req.params.bracket_id)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
 
-  // const matchId = 0;
-
   const matches = await Match.query()
     .select(matchFields)
     .where(dbNames.matchColumns.bracketId, req.params.bracket_id)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
 
   for (let i = 0; i < matches.length; i++) {
-    const particpants = await Participant.query()
+    const participants = await Participant.query()
       .select(participantFileds)
       .where(dbNames.participantColumns.matchId, matches[i].id)
       .andWhere(dbNames.submissionColumns.deletedAt, null);
-    matches[i].participants = particpants;
+    matches[i].participants = participants;
   }
 
   bracket.matches = matches;

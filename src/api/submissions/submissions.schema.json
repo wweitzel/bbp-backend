@@ -6,7 +6,8 @@
   "required": [
     "battleId",
     "submitterId",
-    "soundcloudLink"
+    "soundcloudLink",
+    "submitterUsername"
   ],
   "properties": {
     "battleId": {
@@ -23,6 +24,11 @@
       "$id": "#/properties/soundcloud_link",
       "type": "string",
       "title": "Soundcloud link to the beat."
+    },
+    "submitterUsername": {
+      "$id": "#/properties/submitter_username",
+      "type": "string",
+      "title": "The submitters username."
     }
   },
   "additionalProperties": true

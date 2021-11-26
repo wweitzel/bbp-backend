@@ -31,6 +31,7 @@ exports.up = async (knex) => {
     table.text(dbNames.submissionColumns.soundcloudLink).notNullable();
     table.integer(dbNames.submissionColumns.votes);
     table.integer(dbNames.submissionColumns.rank);
+    table.string(dbNames.submissionColumns.submitterUsername).notNullable();
     addDefaultColumns(table);
   });
 
@@ -49,7 +50,7 @@ exports.up = async (knex) => {
     addDefaultColumns(table);
   });
 
-  await knex.schema.createTable(dbNames.tableNames.partipant, (table) => {
+  await knex.schema.createTable(dbNames.tableNames.participant, (table) => {
     table.string(dbNames.participantColumns.id).notNullable();
     table.integer(dbNames.participantColumns.matchId).notNullable();
     table.primary([dbNames.participantColumns.id, dbNames.participantColumns.matchId]);
@@ -63,7 +64,7 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  await knex.schema.dropTable(dbNames.tableNames.partipant);
+  await knex.schema.dropTable(dbNames.tableNames.participant);
   await knex.schema.dropTable(dbNames.tableNames.match);
   await knex.schema.dropTable(dbNames.tableNames.bracket);
   await knex.schema.dropTable(dbNames.tableNames.submission);

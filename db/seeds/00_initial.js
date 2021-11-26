@@ -6,9 +6,9 @@ function createUser(twitchUserId, twitchUsername, streamer) {
   return { twitchUserId, twitchUsername, streamer };
 }
 
-function createSubmission(battleId, submitterId, soundcloudLink, rank) {
+function createSubmission(battleId, submitterId, submitterUsername, soundcloudLink, rank) {
   return {
-    battleId, submitterId, soundcloudLink, rank
+    battleId, submitterId, submitterUsername, soundcloudLink, rank
   };
 }
 
@@ -76,7 +76,7 @@ async function createMatches(participantCount, bracketId, submissions, trx) {
     participants.push(participant);
   }
 
-  await trx(dbNames.tableNames.partipant).insert(participants).returning('*');
+  await trx(dbNames.tableNames.participant).insert(participants).returning('*');
 }
 
 async function createBracket(knex, submissions) {
@@ -125,16 +125,16 @@ exports.seed = async (knex) => {
     .returning('*');
 
   const submissions = [
-    createSubmission(1, '1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1),
-    createSubmission(1, '2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
-    createSubmission(1, '3', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 3),
-    createSubmission(1, '4', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 4),
-    createSubmission(1, '5', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
-    createSubmission(1, '6', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 6),
-    createSubmission(1, '7', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 7),
-    createSubmission(1, '8', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 8),
-    createSubmission(1, '9', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 9),
-    createSubmission(1, '10', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 10)
+    createSubmission(1, '1', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1),
+    createSubmission(1, '2', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
+    createSubmission(1, '3', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 3),
+    createSubmission(1, '4', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 4),
+    createSubmission(1, '5', 'wes', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
+    createSubmission(1, '6', 'dave', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 6),
+    createSubmission(1, '7', 'adam', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 7),
+    createSubmission(1, '8', 'fond', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 8),
+    createSubmission(1, '9', 'scott', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 9),
+    createSubmission(1, '10', 'richy', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 10)
   ];
 
   const createdSubmissions = await knex(dbNames.tableNames.submission)

@@ -4,7 +4,7 @@ const dbNames = require('../../constants/dbNames');
 
 class Participant extends BaseModel {
   static get tableName() {
-    return dbNames.tableNames.partipant;
+    return dbNames.tableNames.participant;
   }
 }
 

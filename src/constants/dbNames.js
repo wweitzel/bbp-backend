@@ -4,7 +4,7 @@ const tableNames = {
   submission: 'submission',
   bracket: 'bracket',
   match: 'match',
-  partipant: 'particpant'
+  participant: 'participant'
 };
 
 const orderedTableNames = {
@@ -37,6 +37,7 @@ const submissionColumns = {
   soundcloudLink: 'soundcloud_link',
   votes: 'votes',
   rank: 'rank',
+  submitterUsername: 'submitter_username',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   deletedAt: 'deleted_at'
