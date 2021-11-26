@@ -42,17 +42,15 @@ router.get('/authenticate', async (req, res) => {
     }
 
     res.cookie('twitch_access_token', access_token, {
-      httpOnly: false,
-      secure: false,
-      signed: false,
-      sameSite: 'none'
+      httpOnly: true,
+      secure: true,
+      signed: false
     });
 
     res.cookie('twitch_refresh_token', refresh_token, {
-      httpOnly: false,
-      secure: false,
-      signed: false,
-      sameSite: 'none'
+      httpOnly: true,
+      secure: true,
+      signed: false
     });
   }
 
