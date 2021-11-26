@@ -21,6 +21,7 @@ function errorHandler(err, req, res, next) {
 // TODO: This is not being called anywhere yet.
 // Figure out which routes we want to check login for and add this to them.
 async function ensureLoggedIn(req, res, next) {
+  console.log(req.signedCookies.access_token);
   if (req.signedCookies.twitch_access_token) {
     const user = await authUtils.validateToken(req.signedCookies.twitch_access_token);
     if (user.status === 401) {

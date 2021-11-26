@@ -18,7 +18,7 @@ app.use(helmet());
 app.use(cookieParser('keyboard_cat'));
 app.use(cors({
   // TODO: Probably dont want to include localhost in prod
-  origin: ['http://localhost:3000', process.env.FRONTEND_ORIGIN],
+  origin: [process.env.FRONTEND_ORIGIN, 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
