@@ -36,6 +36,22 @@ module.exports = {
     },
     ...knexSnakeCaseMappers()
   },
+  staging: {
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false
+      },
+    },
+    migrations: {
+      directory: './db/migrations',
+    },
+    seeds: {
+      directory: './db/seeds',
+    },
+    ...knexSnakeCaseMappers()
+  },
   production: {
     client: 'pg',
     connection: {
