@@ -14,6 +14,7 @@ const fields = [
   dbNames.battleColumns.id,
   dbNames.battleColumns.streamerId,
   dbNames.battleColumns.endTime,
+  dbNames.battleColumns.name,
   dbNames.battleColumns.createdAt
 ];
 

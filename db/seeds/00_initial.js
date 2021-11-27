@@ -12,8 +12,8 @@ function createSubmission(battleId, submitterId, submitterUsername, soundcloudLi
   };
 }
 
-function createBattle(streamerId, endTime) {
-  return { streamerId, endTime };
+function createBattle(streamerId, endTime, name) {
+  return { streamerId, endTime, name };
 }
 
 function findMatch(matches, matchNumber) {
@@ -115,9 +115,9 @@ exports.seed = async (knex) => {
     .returning('*');
 
   const battles = [
-    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000))),
-    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000))),
-    createBattle('1')
+    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000)), 'Battle 1'),
+    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000)), 'Battle 2'),
+    createBattle('1', null, 'Battle 3')
   ];
 
   await knex(dbNames.tableNames.battle)
