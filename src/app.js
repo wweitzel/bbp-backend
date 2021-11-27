@@ -27,8 +27,6 @@ app.get('/', (req, res) => {
   res.json({
     message: 'Beat Battle Platform 🥁 🎹 🎧 🎸'
   });
-  console.log(req.cookies);
-  console.log(req.signedCookies);
 });
 
 app.use('/api/v1', api);

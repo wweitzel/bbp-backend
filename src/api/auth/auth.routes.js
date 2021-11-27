@@ -54,6 +54,7 @@ router.get('/authenticate', async (req, res) => {
     });
 
     res.cookie('twitch_username', user.login);
+    res.cookie('twitch_user_id', user.user_id);
   }
 
   res.redirect(process.env.FRONTEND_HOME_URL);
