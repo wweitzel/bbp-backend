@@ -32,7 +32,11 @@ router.get('/:submitter_id', async (req, res, next) => {
       .select(fields)
       .where(dbNames.submissionColumns.battleId, req.params.battle_id)
       .andWhere(dbNames.submissionColumns.submitterId, req.params.submitter_id)
-      .andWhere(dbNames.submissionColumns.deletedAt, null);
+      .andWhere(dbNames.submissionColumns.deletedAt, null)
+      .first();
+    if (!submission) {
+      return next();
+    }
     return res.json(submission);
   } catch (error) {
     return next(error);
