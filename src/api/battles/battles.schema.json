@@ -3,7 +3,9 @@
   "type": "object",
   "title": "Battle Schema",
   "required": [
-    "streamerId"
+    "streamerId",
+    "endTime",
+    "name"
   ],
   "properties": {
     "id": {

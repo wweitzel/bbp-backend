@@ -20,6 +20,7 @@ exports.up = async (knex) => {
     table.foreign(dbNames.battleColumns.streamerId).references(dbNames.userColumns.twitchUserId).inTable(dbNames.tableNames.user).onDelete('CASCADE');
     table.timestamp(dbNames.battleColumns.endTime);
     table.string(dbNames.battleColumns.name);
+    table.timestamp(dbNames.battleColumns.votingEndTime);
     addDefaultColumns(table);
   });
 

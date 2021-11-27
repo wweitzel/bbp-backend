@@ -12,8 +12,10 @@ function createSubmission(battleId, submitterId, submitterUsername, soundcloudLi
   };
 }
 
-function createBattle(streamerId, endTime, name) {
-  return { streamerId, endTime, name };
+function createBattle(streamerId, endTime, name, votingEndTime) {
+  return {
+    streamerId, endTime, name, votingEndTime
+  };
 }
 
 function findMatch(matches, matchNumber) {
@@ -114,10 +116,12 @@ exports.seed = async (knex) => {
     .insert(users)
     .returning('*');
 
+  const endTime = new Date(new Date().getTime() + (1 * 60 * 60 * 1000));
+  const votingEndTime = new Date(endTime.getTime() + 15 * 60000); // 15 mintues after endTime
   const battles = [
-    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000)), 'Battle 1'),
-    createBattle('1', new Date(new Date().getTime() + (1 * 60 * 60 * 1000)), 'Battle 2'),
-    createBattle('1', null, 'Battle 3')
+    createBattle('1', endTime, 'Battle 1', votingEndTime),
+    createBattle('1', endTime, 'Battle 2', votingEndTime),
+    createBattle('1', endTime, 'Battle 3', votingEndTime)
   ];
 
   await knex(dbNames.tableNames.battle)

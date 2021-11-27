@@ -15,11 +15,19 @@ const fields = [
   dbNames.battleColumns.streamerId,
   dbNames.battleColumns.endTime,
   dbNames.battleColumns.name,
+  dbNames.battleColumns.votingEndTime,
   dbNames.battleColumns.createdAt
 ];
 
 router.use('/:battle_id/submissions', submissions);
 router.use('/:battle_id/brackets', brackets);
+
+function validate(battleRequest, res) {
+  if (!battleRequest.votingDurationMinutes) {
+    res.status(400);
+    throw new Error('Request body must contain votingDurationMinutes field');
+  }
+}
 
 router.get('/', async (req, res, next) => {
   try {
@@ -69,6 +77,11 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    validate(req.body, res);
+    const minutes = req.body.votingDurationMinutes;
+    const votingEndTime = new Date(new Date(req.body.endTime).getTime() + minutes * 60000);
+    req.body.votingEndTime = votingEndTime;
+    delete req.body.votingDurationMinutes;
     const battle = await Battle.query()
       .insert(req.body)
       .returning(fields);

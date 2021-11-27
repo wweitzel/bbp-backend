@@ -27,6 +27,7 @@ const battleColumns = {
   streamerId: 'streamer_id',
   endTime: 'end_time',
   name: 'name',
+  votingEndTime: 'voting_end_time',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   deletedAt: 'deleted_at'
