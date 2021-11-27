@@ -29,7 +29,8 @@ exports.up = async (knex) => {
     table.foreign(dbNames.submissionColumns.battleId).references(dbNames.battleColumns.id).inTable(dbNames.tableNames.battle).onDelete('CASCADE');
     table.foreign(dbNames.submissionColumns.submitterId).references(dbNames.userColumns.twitchUserId).inTable(dbNames.tableNames.user).onDelete('CASCADE');
     table.text(dbNames.submissionColumns.soundcloudLink).notNullable();
-    table.integer(dbNames.submissionColumns.votes);
+    table.integer(dbNames.submissionColumns.voteCount).defaultTo(0);
+    table.specificType(dbNames.submissionColumns.voteUsers, 'text[]').defaultTo('{}');
     table.integer(dbNames.submissionColumns.rank);
     table.string(dbNames.submissionColumns.submitterUsername).notNullable();
     addDefaultColumns(table);
