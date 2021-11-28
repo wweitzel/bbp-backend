@@ -1,6 +1,7 @@
 const express = require('express');
 
 const dbNames = require('../../constants/dbNames');
+const bracketController = require('./brackets.controller');
 const Bracket = require('./brackets.model');
 const Participant = require('../participants/participants.model');
 const Match = require('../matches/matches.model');
@@ -27,15 +28,7 @@ const matchFields = [
   dbNames.matchColumns.nextMatchId
 ];
 
-router.get('/', async (req, res) => {
-  const brackets = await Bracket.query()
-    .select(fields)
-    .where(dbNames.bracketColumns.battleId, req.params.battle_id)
-    .andWhere(dbNames.submissionColumns.deletedAt, null);
-  res.json(brackets);
-});
-
-router.get('/:bracket_id', async (req, res) => {
+async function getBracket(req) {
   const [bracket] = await Bracket.query()
     .select(fields)
     .where(dbNames.bracketColumns.id, req.params.bracket_id)
@@ -56,7 +49,55 @@ router.get('/:bracket_id', async (req, res) => {
 
   bracket.matches = matches;
 
-  res.json(bracket);
+  return bracket;
+}
+
+router.get('/', async (req, res) => {
+  const brackets = await Bracket.query()
+    .select(fields)
+    .where(dbNames.bracketColumns.battleId, req.params.battle_id)
+    .andWhere(dbNames.submissionColumns.deletedAt, null);
+  res.json(brackets);
+});
+
+// Test endpoiont to reset bracket
+router.post('/:bracket_id/reset', async (req, res) => {
+  await Participant.transaction(async (trx) => {
+    await Participant.query(trx)
+      .delete()
+      .whereIn(dbNames.participantColumns.matchId, ['5', '6', '7', '8']);
+    const ps = await Participant.query(trx)
+      .select(participantFileds)
+      .whereIn(dbNames.participantColumns.matchId, ['1', '2', '3', '4']);
+    for (let i = 0; i < ps.length; i++) {
+      await Participant.query(trx)
+        .patch({
+          isWinner: false,
+          resultText: ''
+        });
+    }
+  });
+  res.json(await getBracket(req));
+});
+
+router.get('/:bracket_id', async (req, res) => {
+  res.json(await getBracket(req));
+});
+
+router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
+  const match = await Match.query()
+    .findById(req.params.match_id);
+
+  if (!match) {
+    return next();
+  }
+
+  try {
+    await bracketController.saveMatchWinner(req, res, next);
+    return res.json(await getBracket(req));
+  } catch (error) {
+    return next(error);
+  }
 });
 
 module.exports = router;
