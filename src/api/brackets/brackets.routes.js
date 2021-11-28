@@ -1,6 +1,7 @@
 const express = require('express');
 
 const dbNames = require('../../constants/dbNames');
+const bracketController = require('./brackets.controller');
 const Bracket = require('./brackets.model');
 const Participant = require('../participants/participants.model');
 const Match = require('../matches/matches.model');
@@ -91,61 +92,8 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
     return next();
   }
 
-  console.log(match);
-
-  if (!req.body.winnerUserId) {
-    return next(new Error('winnerUserId needs to be specified in the request to declare a winner.'));
-  }
-
-  const participants = await Participant.query()
-    .select(participantFileds)
-    .where(dbNames.participantColumns.matchId, req.params.match_id);
-
-  if (participants.length < 2 && req.body.winnerUserId) {
-    return next(new Error('Cannot set winner for a match with less than 2 participants'));
-  }
-
-  console.log(participants);
-
-  let winnerName;
-
-  for (let i = 0; i < participants.length; i++) {
-    // TODO: Should we use code below to prevent this operation if the match already has a winner?
-    // if (participants[i].isWinner) {
-    //   return next(new Error('Match already has a winner declared.'));
-    // }
-    if (participants[i].id === req.body.winnerUserId) {
-      participants[i].isWinner = true;
-      participants[i].resultText = 'WON';
-      winnerName = participants[i].name;
-    } else {
-      participants[i].isWinner = false;
-      participants[i].resultText = 'LOST';
-    }
-  }
-
   try {
-    await Participant.transaction(async (trx) => {
-      for (let i = 0; i < participants.length; i++) {
-        await Participant.query(trx)
-          .patch({
-            isWinner: participants[i].isWinner,
-            resultText: participants[i].resultText
-          })
-          .where(dbNames.participantColumns.id, participants[i].id)
-          .andWhere(dbNames.participantColumns.matchId, req.params.match_id);
-      }
-
-      if (match.nextMatchId) {
-        // Advance the winner to the next match
-        await Participant.query(trx).insert({
-          id: req.body.winnerUserId,
-          matchId: match.nextMatchId,
-          name: winnerName
-        });
-      }
-    });
-
+    await bracketController.saveMatchWinner(req, res, next);
     return res.json(await getBracket(req));
   } catch (error) {
     return next(error);
