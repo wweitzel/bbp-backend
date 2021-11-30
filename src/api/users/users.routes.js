@@ -12,11 +12,15 @@ const fields = [
   dbNames.userColumns.createdAt
 ];
 
-router.get('/', async (req, res) => {
-  const users = await User.query()
-    .select(fields)
-    .where(dbNames.userColumns.deletedAt, null);
-  res.json(users);
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await User.query()
+      .select(fields)
+      .where(dbNames.userColumns.deletedAt, null);
+    return res.json(users);
+  } catch (error) {
+    return next(error);
+  }
 });
 
 router.get('/:id', async (req, res, next) => {

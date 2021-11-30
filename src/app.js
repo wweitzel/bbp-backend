@@ -13,7 +13,25 @@ const app = express();
 
 require('./db');
 
-app.use(morgan('dev'));
+morgan.token('user-id', (req) => req.userId);
+morgan.token('username', (req) => req.username);
+
+// TODO: Move this out into a config
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan((tokens, req, res) => [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens['response-time'](req, res), 'ms',
+    // eslint-disable-next-line dot-notation
+    tokens['username'](req, res),
+    // eslint-disable-next-line dot-notation
+    tokens['user-id'](req, res)
+  ].join(' ')));
+} else {
+  app.use(morgan('dev'));
+}
+
 app.use(helmet());
 app.use(cookieParser('keyboard_cat'));
 app.use(cors({

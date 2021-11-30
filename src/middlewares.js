@@ -1,5 +1,13 @@
 const authUtils = require('./lib/authUtils');
 
+// Helper function to get the user and set username and userId to be logged by morgan
+async function getUser(req) {
+  const user = await authUtils.validateToken(req.headers.twitch_access_token);
+  req.username = user.login;
+  req.userId = user.user_id;
+  return user;
+}
+
 function notFound(req, res, next) {
   res.status(404);
   const error = new Error(`🔍 - Not Found - ${req.originalUrl}`);
@@ -22,7 +30,7 @@ function errorHandler(err, req, res, next) {
 // Figure out which routes we want to check login for and add this to them.
 async function ensureLoggedIn(req, res, next) {
   if (req.signedCookies.twitch_access_token) {
-    const user = await authUtils.validateToken(req.signedCookies.twitch_access_token);
+    const user = await getUser(req);
     if (user.status === 401) {
       const response = await authUtils.refreshToken(req.signedCookies.twitch_refresh_token);
       if (response.status === 200) {
@@ -44,7 +52,7 @@ async function ensureLoggedIn(req, res, next) {
     }
   } else if (process.env.ALLOW_TOKEN_IN_HEADER === 'true') {
     if (req.headers.twitch_access_token) {
-      const user = await authUtils.validateToken(req.headers.twitch_access_token);
+      const user = await getUser(req);
       if (user.status === 401) {
         res.status(401);
         next(new Error('Un-Authorized: Invalid access token supplied in header.'));
