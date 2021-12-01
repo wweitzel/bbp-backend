@@ -28,15 +28,15 @@ const matchFields = [
   dbNames.matchColumns.nextMatchId
 ];
 
-async function getBracket(req) {
+async function getBracket(bracketId) {
   const [bracket] = await Bracket.query()
     .select(fields)
-    .where(dbNames.bracketColumns.id, req.params.bracket_id)
+    .where(dbNames.bracketColumns.id, bracketId)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
 
   const matches = await Match.query()
     .select(matchFields)
-    .where(dbNames.matchColumns.bracketId, req.params.bracket_id)
+    .where(dbNames.matchColumns.bracketId, bracketId)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
 
   for (let i = 0; i < matches.length; i++) {
@@ -77,11 +77,11 @@ router.post('/:bracket_id/reset', async (req, res) => {
         });
     }
   });
-  res.json(await getBracket(req));
+  res.json(await getBracket(req.params.bracket_id));
 });
 
 router.get('/:bracket_id', async (req, res) => {
-  res.json(await getBracket(req));
+  res.json(await getBracket(req.params.bracket_id));
 });
 
 router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
@@ -94,7 +94,16 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 
   try {
     await bracketController.saveMatchWinner(req, res, next);
-    return res.json(await getBracket(req));
+    return res.json(await getBracket(req.params.bracket_id));
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const bracket = await bracketController.createBracket(req, res, next);
+    return res.json(await getBracket(bracket.id));
   } catch (error) {
     return next(error);
   }

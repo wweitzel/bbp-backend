@@ -4,6 +4,7 @@ const { raw } = require('objection');
 const dbNames = require('../../constants/dbNames');
 const Submission = require('./submissions.model');
 const User = require('../users/users.model');
+const Battle = require('../battles/battles.model');
 
 const router = express.Router({ mergeParams: true });
 
@@ -50,6 +51,9 @@ router.post('/', async (req, res, next) => {
       .where(dbNames.userColumns.twitchUserId, req.body.submitterId)
       .first();
 
+    if (!user) {
+      throw new Error('User with twitchUserId ' + req.body.subitterId + ' does not exist');
+    }
     req.body.submitterUsername = user.twitchUsername;
 
     const submission = await Submission.query()
@@ -63,6 +67,22 @@ router.post('/', async (req, res, next) => {
 
 router.post('/:submitter_id/votes', async (req, res, next) => {
   try {
+    const battle = await Battle.query()
+      .select(fields)
+      .where(dbNames.battleColumns.id, req.params.battle_id)
+      .andWhere(dbNames.userColumns.deletedAt, null)
+      .first();
+
+    // TODO: This is duplicated from brackets.controller.js. We should combine them
+    // in a util function.
+    const nowMs = new Date().getTime();
+    const endTimeMs = new Date(battle.endTime).getTime();
+    const votingEndTimeMs = new Date(battle.votingEndTime).getTime();
+    if ((endTimeMs > nowMs) || votingEndTimeMs > nowMs) {
+      res.status(400);
+      throw new Error('Battle vodting period is not over yet.');
+    }
+
     const submission = await Submission.query()
       .select(fields)
       .where(dbNames.submissionColumns.battleId, req.params.battle_id)
