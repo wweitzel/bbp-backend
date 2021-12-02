@@ -17,6 +17,7 @@ function notFound(req, res, next) {
 
 /* eslint-disable no-unused-vars */
 function errorHandler(err, req, res, next) {
+  console.error(err);
   /* eslint-enable no-unused-vars */
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
   res.status(statusCode);
