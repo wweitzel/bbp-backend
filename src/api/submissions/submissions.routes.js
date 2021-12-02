@@ -87,7 +87,7 @@ router.post('/:submitter_id/votes', async (req, res, next) => {
     const nowMs = new Date().getTime();
     const endTimeMs = new Date(battle.endTime).getTime();
     const votingEndTimeMs = new Date(battle.votingEndTime).getTime();
-    if ((endTimeMs > nowMs) || votingEndTimeMs > nowMs) {
+    if (endTimeMs > nowMs || votingEndTimeMs < nowMs) {
       res.status(400);
       throw new Error('Battle vodting period is not over yet.');
     }
