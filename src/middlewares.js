@@ -1,6 +1,7 @@
 const authUtils = require('./lib/authUtils');
 
 // Helper function to get the user and set username and userId to be logged by morgan
+// eslint-disable-next-line no-unused-vars
 async function getUser(req) {
   const user = await authUtils.validateToken(req.headers.twitch_access_token);
   req.username = user.login;
@@ -26,45 +27,17 @@ function errorHandler(err, req, res, next) {
   });
 }
 
-// TODO: This is not being called anywhere yet.
-// Figure out which routes we want to check login for and add this to them.
 async function ensureLoggedIn(req, res, next) {
-  if (req.signedCookies.twitch_access_token) {
-    const user = await getUser(req);
-    if (user.status === 401) {
-      const response = await authUtils.refreshToken(req.signedCookies.twitch_refresh_token);
-      if (response.status === 200) {
-        res.cookie('twitch_access_token', response.access_token, {
-          httpOnly: true,
-          secure: true,
-          signed: true
-        });
-
-        res.cookie('twitch_refresh_token', response.refresh_token, {
-          httpOnly: true,
-          secure: true,
-          signed: true
-        });
-      } else {
-        res.status(401);
-        next(new Error('Un-Authorized: Invalid access/refresh token. Please login again.'));
-      }
-    }
-  } else if (process.env.ALLOW_TOKEN_IN_HEADER === 'true') {
-    if (req.headers.twitch_access_token) {
-      const user = await getUser(req);
-      if (user.status === 401) {
-        res.status(401);
-        next(new Error('Un-Authorized: Invalid access token supplied in header.'));
-      }
-    } else {
-      res.status(401);
-      next(new Error('Un-Authorized: No access token provided in header.'));
-    }
-  } else {
+  if (process.env.ALLOW_TOKEN_IN_HEADER === 'false' && !req.signedCookies.twitch_access_token) {
     res.status(401);
-    next(new Error('Un-Authorized: No access token provided.'));
+    next(new Error('Un-Authorized: Invalid access/refresh token. Please login again.'));
   }
+
+  if (process.env.ALLOW_TOKEN_IN_HEADER === 'true' && !req.headers.twitch_access_token) {
+    res.status(401);
+    next(new Error('Dev mode Un-Authorized: Please add a twitch_access_token to localstorage.'));
+  }
+
   next();
 }
 

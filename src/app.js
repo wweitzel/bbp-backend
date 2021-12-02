@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(helmet());
-app.use(cookieParser('keyboard_cat'));
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({
   // TODO: Probably dont want to include localhost in prod
   origin: [process.env.FRONTEND_ORIGIN, 'http://localhost:3000'],
