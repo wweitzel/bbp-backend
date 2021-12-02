@@ -19,6 +19,15 @@ const fields = [
   dbNames.submissionColumns.createdAt
 ];
 
+const battleFields = [
+  dbNames.battleColumns.id,
+  dbNames.battleColumns.streamerId,
+  dbNames.battleColumns.endTime,
+  dbNames.battleColumns.name,
+  dbNames.battleColumns.votingEndTime,
+  dbNames.battleColumns.createdAt
+];
+
 router.get('/', async (req, res) => {
   const submissions = await Submission.query()
     .select(fields)
@@ -68,7 +77,7 @@ router.post('/', async (req, res, next) => {
 router.post('/:submitter_id/votes', async (req, res, next) => {
   try {
     const battle = await Battle.query()
-      .select(fields)
+      .select(battleFields)
       .where(dbNames.battleColumns.id, req.params.battle_id)
       .andWhere(dbNames.userColumns.deletedAt, null)
       .first();
