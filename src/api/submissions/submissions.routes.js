@@ -85,11 +85,10 @@ router.post('/:submitter_id/votes', async (req, res, next) => {
     // TODO: This is duplicated from brackets.controller.js. We should combine them
     // in a util function.
     const nowMs = new Date().getTime();
-    const endTimeMs = new Date(battle.endTime).getTime();
     const votingEndTimeMs = new Date(battle.votingEndTime).getTime();
-    if (endTimeMs > nowMs || votingEndTimeMs < nowMs) {
+    if (votingEndTimeMs < nowMs) {
       res.status(400);
-      throw new Error('Battle vodting period is not over yet.');
+      throw new Error('Battle voting period is not over yet.');
     }
 
     const submission = await Submission.query()
