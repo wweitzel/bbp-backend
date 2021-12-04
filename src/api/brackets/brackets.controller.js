@@ -150,7 +150,11 @@ async function validateCanCreateBracket(req, res) {
   const nowMs = new Date().getTime();
   const endTimeMs = new Date(battle.endTime).getTime();
   const votingEndTimeMs = new Date(battle.votingEndTime).getTime();
-  if ((endTimeMs > nowMs) || votingEndTimeMs > nowMs) {
+  if (endTimeMs > nowMs) {
+    res.status(400);
+    throw new Error('Battle submission period is not over yet.');
+  }
+  if (votingEndTimeMs > nowMs) {
     res.status(400);
     throw new Error('Battle vodting period is not over yet.');
   }
