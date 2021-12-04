@@ -19,9 +19,11 @@ router.get('/authenticate', async (req, res) => {
   const { access_token } = json;
   const { refresh_token } = json;
 
+  let dbUser;
+
   if (access_token) {
     const user = await authUtils.validateToken(access_token);
-    const dbUser = await User.query()
+    dbUser = await User.query()
       .where(dbNames.userColumns.twitchUserId, user.user_id)
       .andWhere(dbNames.userColumns.deletedAt, null)
       .first();
@@ -31,14 +33,16 @@ router.get('/authenticate', async (req, res) => {
         twitchUsername: user.login,
         streamer: false
       };
-      await User.query().insert(u);
+      dbUser = await User.query()
+        .insert(u)
+        .returning('*');
     } else {
       // Sync our username with twitch username since it can change on twitch
-      await User.query()
+      dbUser = await User.query()
         .findById(dbUser.twitchUserId)
         .patch({
           twitchUsername: user.login
-        });
+        }).returning('*');
     }
 
     res.cookie('twitch_access_token', access_token, {
@@ -53,6 +57,11 @@ router.get('/authenticate', async (req, res) => {
       signed: true
     });
 
+    res.cookie('streamer', dbUser.streamer, {
+      secure: true,
+      signed: true
+    });
+
     res.cookie('twitch_username', user.login, {
       secure: true,
       signed: true
@@ -62,6 +71,8 @@ router.get('/authenticate', async (req, res) => {
       secure: true,
       signed: true
     });
+  } else {
+    console.error('Error logging in ', json);
   }
 
   res.redirect(process.env.FRONTEND_HOME_URL);
