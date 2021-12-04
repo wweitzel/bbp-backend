@@ -5,6 +5,7 @@ const bracketController = require('./brackets.controller');
 const Bracket = require('./brackets.model');
 const Participant = require('../participants/participants.model');
 const Match = require('../matches/matches.model');
+const Submission = require('../submissions/submissions.model');
 
 const router = express.Router({ mergeParams: true });
 
@@ -28,15 +29,26 @@ const matchFields = [
   dbNames.matchColumns.nextMatchId
 ];
 
-async function getBracket(bracketId) {
+async function getBracket(bracketId, battleId, res) {
+  // TODO: All below queries should probably be in a transaction
   const [bracket] = await Bracket.query()
     .select(fields)
     .where(dbNames.bracketColumns.id, bracketId)
-    .andWhere(dbNames.submissionColumns.deletedAt, null);
+    .andWhere(dbNames.bracketColumns.deletedAt, null);
+
+  if (!bracket) {
+    res.status(404);
+    throw new Error(`Bracket with bracket id ${bracketId} not fonud`);
+  }
 
   const matches = await Match.query()
     .select(matchFields)
     .where(dbNames.matchColumns.bracketId, bracketId)
+    .andWhere(dbNames.submissionColumns.deletedAt, null);
+
+  const submissions = await Submission.query()
+    .select(dbNames.submissionColumns.submitterId, dbNames.submissionColumns.rank)
+    .where(dbNames.submissionColumns.battleId, battleId)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
 
   for (let i = 0; i < matches.length; i++) {
@@ -44,6 +56,9 @@ async function getBracket(bracketId) {
       .select(participantFileds)
       .where(dbNames.participantColumns.matchId, matches[i].id)
       .andWhere(dbNames.submissionColumns.deletedAt, null);
+    participants.forEach((participant) => {
+      participant.seed = submissions.find((s) => s.submitterId === participant.id).rank;
+    });
     matches[i].participants = participants;
   }
 
@@ -77,11 +92,15 @@ router.post('/:bracket_id/reset', async (req, res) => {
         });
     }
   });
-  res.json(await getBracket(req.params.bracket_id));
+  res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
 });
 
-router.get('/:bracket_id', async (req, res) => {
-  res.json(await getBracket(req.params.bracket_id));
+router.get('/:bracket_id', async (req, res, next) => {
+  try {
+    res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
@@ -94,7 +113,7 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 
   try {
     await bracketController.saveMatchWinner(req, res, next);
-    return res.json(await getBracket(req.params.bracket_id));
+    return res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
   } catch (error) {
     return next(error);
   }
@@ -103,7 +122,7 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const bracket = await bracketController.createBracket(req, res, next);
-    return res.json(await getBracket(bracket.id));
+    return res.json(await getBracket(bracket.id, req.params.battle_id, res));
   } catch (error) {
     return next(error);
   }
