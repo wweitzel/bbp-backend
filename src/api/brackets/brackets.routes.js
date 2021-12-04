@@ -60,6 +60,8 @@ async function getBracket(bracketId, battleId, res) {
       participant.seed = submissions.find((s) => s.submitterId === participant.id).rank;
     });
     matches[i].participants = participants;
+    // TODO: Gonna need to set this correctly depending on how many rounds there are
+    matches[i].tournamentRoundText = '1';
   }
 
   bracket.matches = matches;
