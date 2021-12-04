@@ -55,6 +55,19 @@ router.get('/:submitter_id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    const battle = await Battle.query()
+      .select(battleFields)
+      .where(dbNames.battleColumns.id, req.params.battle_id)
+      .andWhere(dbNames.userColumns.deletedAt, null)
+      .first();
+
+    const nowMs = new Date().getTime();
+    const submissionEndTime = new Date(battle.endTime).getTime();
+    if (submissionEndTime < nowMs) {
+      res.status(400);
+      throw new Error('Battle submission phase has ended.');
+    }
+
     const user = await User.query()
       .select(dbNames.userColumns.twtichUsername)
       .where(dbNames.userColumns.twitchUserId, req.body.submitterId)
@@ -88,7 +101,7 @@ router.post('/:submitter_id/votes', async (req, res, next) => {
     const votingEndTime = new Date(battle.votingEndTime).getTime();
     if (votingEndTime < nowMs) {
       res.status(400);
-      throw new Error('Battle voting period is not over yet.');
+      throw new Error('Battle voting phase is over.');
     }
 
     const submission = await Submission.query()
