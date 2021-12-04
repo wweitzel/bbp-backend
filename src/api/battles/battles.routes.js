@@ -16,6 +16,7 @@ const fields = [
   dbNames.battleColumns.endTime,
   dbNames.battleColumns.name,
   dbNames.battleColumns.votingEndTime,
+  dbNames.battleColumns.isAnonymous,
   dbNames.battleColumns.createdAt
 ];
 

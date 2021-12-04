@@ -12,9 +12,9 @@ function createSubmission(battleId, submitterId, submitterUsername, soundcloudLi
   };
 }
 
-function createBattle(streamerId, endTime, name, votingEndTime) {
+function createBattle(streamerId, endTime, name, votingEndTime, isAnonymous) {
   return {
-    streamerId, endTime, name, votingEndTime
+    streamerId, endTime, name, votingEndTime, isAnonymous
   };
 }
 
@@ -119,9 +119,9 @@ exports.seed = async (knex) => {
   const endTime = new Date(new Date().getTime() + (1 * 60 * 60 * 1000));
   const votingEndTime = new Date(endTime.getTime() + 15 * 60000); // 15 mintues after endTime
   const battles = [
-    createBattle('1', endTime, 'Battle 1', votingEndTime),
-    createBattle('1', endTime, 'Battle 2', votingEndTime),
-    createBattle('1', endTime, 'Battle 3', votingEndTime)
+    createBattle('1', endTime, 'Battle 1', votingEndTime, false),
+    createBattle('1', endTime, 'Battle 2', votingEndTime, false),
+    createBattle('1', endTime, 'Battle 3', votingEndTime, true)
   ];
 
   await knex(dbNames.tableNames.battle)
