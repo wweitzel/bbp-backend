@@ -78,4 +78,13 @@ router.get('/authenticate', async (req, res) => {
   res.redirect(process.env.FRONTEND_HOME_URL);
 });
 
+router.get('/logout', (req, res) => {
+  res.clearCookie('twitch_access_token');
+  res.clearCookie('twitch_refresh_token');
+  res.clearCookie('streamer');
+  res.clearCookie('twitch_username');
+  res.clearCookie('twitch_user_id');
+  res.json({});
+});
+
 module.exports = router;
