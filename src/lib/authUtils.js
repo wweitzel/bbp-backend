@@ -1,14 +1,5 @@
 const fetch = require('node-fetch');
 
-async function validateToken(token) {
-  const r = await fetch('https://id.twitch.tv/oauth2/validate', {
-    headers: {
-      Authorization: 'Bearer ' + token
-    }
-  });
-  return r.json();
-}
-
 async function refreshToken(refresh_token) {
   const r = await fetch('https://id.twitch.tv/oauth2/token'
     + '?grant_type=refresh_token'
@@ -18,7 +9,48 @@ async function refreshToken(refresh_token) {
   return r.json();
 }
 
+async function validateToken(twitchAccessToken) {
+  const r = await fetch('https://id.twitch.tv/oauth2/validate', {
+    headers: {
+      Authorization: 'Bearer ' + twitchAccessToken
+    }
+  });
+  return r.json();
+}
+
+async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, res) {
+  let user = await validateToken(twitchAccessToken);
+
+  if (user.status === 401) {
+    const response = await refreshToken(twitchRefreshToken);
+    if (response.status === 200) {
+      res.cookie('twitch_access_token', response.access_token, {
+        httpOnly: true,
+        secure: true,
+        signed: true
+      });
+
+      res.cookie('twitch_refresh_token', response.refresh_token, {
+        httpOnly: true,
+        secure: true,
+        signed: true
+      });
+
+      user = await validateToken(response.access_token);
+      user.twitchAccessToken = response.access_token;
+    } else {
+      res.status(401);
+      throw new Error('Un-Authorized: Invalid access/refresh token. Please login again.');
+    }
+  } else {
+    user.twitchAccessToken = twitchAccessToken;
+  }
+
+  return user;
+}
+
 module.exports = {
+  validateAndRefreshToken,
   validateToken,
   refreshToken
 };

@@ -100,8 +100,8 @@ exports.seed = async (knex) => {
   await knex(dbNames.tableNames.user).del();
 
   const users = [
-    createUser('1', 'chrispunsalan', true),
-    createUser('2', 'kennybeats', false),
+    createUser('516754928', 'chrispunsalan', true),
+    createUser('477294350', 'kennybeats', false),
     createUser('3', 'alextumay', false),
     createUser('4', 'spell', false),
     createUser('5', 'wes', false),
@@ -119,9 +119,10 @@ exports.seed = async (knex) => {
   const endTime = new Date(new Date().getTime() + (1 * 60 * 60 * 1000));
   const votingEndTime = new Date(endTime.getTime() + 15 * 60000); // 15 mintues after endTime
   const battles = [
-    createBattle('1', endTime, 'Battle 1', votingEndTime, false),
-    createBattle('1', endTime, 'Battle 2', votingEndTime, false),
-    createBattle('1', endTime, 'Battle 3', votingEndTime, true)
+    createBattle('516754928', endTime, 'Battle 1', votingEndTime, false),
+    createBattle('516754928', endTime, 'Battle 2', votingEndTime, true),
+    createBattle('477294350', endTime, 'Battle 3', votingEndTime, false),
+    createBattle('4', endTime, 'Battle 4', votingEndTime, false)
   ];
 
   await knex(dbNames.tableNames.battle)
@@ -129,8 +130,8 @@ exports.seed = async (knex) => {
     .returning('*');
 
   const submissions = [
-    createSubmission(1, '1', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1),
-    createSubmission(1, '2', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
+    createSubmission(1, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1),
+    createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
     createSubmission(1, '3', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 3),
     createSubmission(1, '4', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 4),
     createSubmission(1, '5', 'wes', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
