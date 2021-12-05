@@ -1,9 +1,10 @@
-const fetch = require('node-fetch');
+const { getRequest, postRequest } = require('./scriptUtils');
 
 // Set to battle id you created
-const battleId = 34;
+const battleId = 7;
 
-const apiUrl = `http://localhost:5000/api/v1/battles/${battleId}/submissions`;
+const submissionUrl = `http://localhost:5000/api/v1/battles/${battleId}/submissions`;
+const usersUrl = 'http://localhost:5000/api/v1/users';
 
 function createSubmission(userId) {
   return {
@@ -13,23 +14,17 @@ function createSubmission(userId) {
   };
 }
 
-async function postRequest(body) {
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-      twitch_access_token: 'some jawn'
-    }
-  });
-  return res.json();
-}
-
 async function main() {
-  for (let i = 0; i < 10; i++) {
-    const submission = await postRequest(createSubmission((i + 1).toString()));
+  const users = await getRequest(usersUrl);
+  console.log(users.length);
+
+  users.forEach(async (user) => {
+    const submission = await postRequest(
+      submissionUrl,
+      createSubmission((user.twitchUserId).toString())
+    );
     console.log(submission);
-  }
+  });
 }
 
 main();
