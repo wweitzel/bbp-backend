@@ -115,10 +115,11 @@ exports.seed = async (knex) => {
   ];
 
   const moreUsers = [];
-  for (let i = 11; i < 1000; i++) {
-    const username = 'user' + i;
-    moreUsers.push(createUser(i.toString(), username, false));
-  }
+  // Uncomment for more users
+  // for (let i = 11; i < 1000; i++) {
+  //   const username = 'user' + i;
+  //   moreUsers.push(createUser(i.toString(), username, false));
+  // }
 
   await knex(dbNames.tableNames.user)
     .insert([...users, ...moreUsers])
