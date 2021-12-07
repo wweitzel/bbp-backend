@@ -1,8 +1,9 @@
 const fetch = require('node-fetch');
 
-async function refreshToken(refresh_token) {
+async function refreshToken(access_token, refresh_token) {
   const r = await fetch('https://id.twitch.tv/oauth2/token'
     + '?grant_type=refresh_token'
+    + '&access_token' + access_token
     + '&refresh_token=' + refresh_token
     + '&client_id=' + process.env.TWITCH_CLIENT_ID
     + '&client_secret=' + process.env.TWITCH_CLIENT_SECRET, { method: 'post' });
@@ -22,7 +23,7 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
   let user = await validateToken(twitchAccessToken);
 
   if (user.status === 401) {
-    const response = await refreshToken(twitchRefreshToken);
+    const response = await refreshToken(twitchAccessToken, twitchRefreshToken);
     if (response.status === 200) {
       res.cookie('twitch_access_token', response.access_token, {
         httpOnly: true,

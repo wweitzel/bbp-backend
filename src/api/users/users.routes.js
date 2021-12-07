@@ -48,7 +48,9 @@ router.get('/:id/subscriptions', async (req, res, next) => {
       throw new Error('Must specify streamerId query param.');
     }
 
-    const user = await authUtils.validateAndRefreshToken(req.signedCookies.twitch_access_token);
+    const user = await authUtils.validateAndRefreshToken(
+      req.signedCookies.twitch_access_token, req.signedCookies.twitch_refresh_token, res
+    );
 
     const response = await fetch(`https://api.twitch.tv/helix/subscriptions/user?user_id=${user.user_id}&broadcaster_id=${streamerId}`, {
       headers: {

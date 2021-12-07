@@ -78,6 +78,21 @@ router.get('/authenticate', async (req, res) => {
   res.redirect(process.env.FRONTEND_HOME_URL);
 });
 
+router.get('/validate', async (req, res, next) => {
+  try {
+    if (req.signedCookies.twitch_access_token) {
+      await authUtils.validateAndRefreshToken(
+        req.signedCookies.twitch_access_token, req.signedCookies.twitch_refresh_token, res
+      );
+      return res.json({ valid: true });
+    }
+    return res.json({ valid: false });
+  } catch (error) {
+    res.status(401);
+    return next(error);
+  }
+});
+
 router.get('/logout', (req, res) => {
   res.clearCookie('twitch_access_token');
   res.clearCookie('twitch_refresh_token');
