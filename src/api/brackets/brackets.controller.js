@@ -102,25 +102,32 @@ async function createMatches(participantCount, bracketId, submissions, trx) {
   await Participant.query(trx).insert(participants).returning('*');
 }
 
-async function _createBracket(battleId, orderedSubmissions) {
-  let bracket;
-  await Bracket.transaction(async (trx) => {
-    bracket = await Bracket.query(trx).insert({ battleId }).returning('*');
-    await createMatches(8, bracket.id, orderedSubmissions, trx);
-  });
-  return bracket;
-}
-
-async function rankSubmissions(battleId) {
-  const submissions = await Submission.query()
+async function rankSubmissions(battleId, trx) {
+  const submissions = await Submission.query(trx)
     .select(submissionFields)
     .where(dbNames.submissionColumns.battleId, battleId)
     .andWhere(dbNames.submissionColumns.deletedAt, null);
   submissions.sort((sub1, sub2) => (sub1.voteCount < sub2.voteCount ? 1 : -1));
   for (let i = 0; i < submissions.length; i++) {
     submissions[i].rank = i + 1;
+    await Submission.query(trx)
+      .patch({ rank: submissions[i].rank })
+      .findById([battleId, submissions[i].submitterId]);
   }
   return submissions;
+}
+
+async function _createBracket(battleId) {
+  let bracket;
+  await Bracket.transaction(async (trx) => {
+    const orderedSubmissions = await rankSubmissions(battleId, trx);
+    if (orderedSubmissions.length < 8) {
+      throw new Error('Not enough submissions to create bracket. Need 8 but had ' + orderedSubmissions.length);
+    }
+    bracket = await Bracket.query(trx).insert({ battleId }).returning('*');
+    await createMatches(8, bracket.id, orderedSubmissions, trx);
+  });
+  return bracket;
 }
 
 async function validateMatchExists(req, res, next) {
@@ -300,11 +307,7 @@ async function saveMatchWinner(req, res, next) {
 async function createBracket(req, res) {
   validateCreateBracketRequest(req, res);
   await validateCanCreateBracket(req, res);
-  const orderedSubmissions = await rankSubmissions(req.body.battleId);
-  if (orderedSubmissions.length < 8) {
-    throw new Error('Not enough submissions to create bracket. Need 8 but had ' + orderedSubmissions.length);
-  }
-  return _createBracket(req.body.battleId, orderedSubmissions);
+  return _createBracket(req.body.battleId);
 }
 
 module.exports = {
