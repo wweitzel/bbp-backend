@@ -1,7 +1,8 @@
 const { getRequest, postRequest } = require('./scriptUtils');
+require('dotenv').config();
 
-// Set to battle id you created
-const battleId = 7;
+// Set this is the .env file
+const battleId = parseInt(process.env.BATTLE_ID, 10);
 
 const submissionsUrl = `http://localhost:5000/api/v1/battles/${battleId}/submissions`;
 const usersUrl = 'http://localhost:5000/api/v1/users';
