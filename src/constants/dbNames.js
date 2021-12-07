@@ -29,6 +29,8 @@ const battleColumns = {
   name: 'name',
   votingEndTime: 'voting_end_time',
   isAnonymous: 'is_anonymous',
+  isSubscriberOnly: 'is_subscriber_only',
+  sampleUrl: 'sample_url',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   deletedAt: 'deleted_at'

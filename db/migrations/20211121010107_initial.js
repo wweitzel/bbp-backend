@@ -22,6 +22,8 @@ exports.up = async (knex) => {
     table.string(dbNames.battleColumns.name);
     table.timestamp(dbNames.battleColumns.votingEndTime);
     table.boolean(dbNames.battleColumns.isAnonymous).defaultTo(false);
+    table.boolean(dbNames.battleColumns.isSubscriberOnly).defaultTo(false);
+    table.string(dbNames.battleColumns.sampleUrl);
     addDefaultColumns(table);
   });
 
