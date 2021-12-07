@@ -32,6 +32,21 @@ function validate(battleRequest, res) {
   }
 }
 
+function validateUpdateBattleRequest(battle) {
+  if (battle.id) {
+    throw new Error('id field cannot be set when updating a battle.');
+  }
+  if (battle.streamerId) {
+    throw new Error('streamerId field cannot be set when updating a battle.');
+  }
+  if (battle.createdAt) {
+    throw new Error('createdAt field cannot be set when updating a battle.');
+  }
+  if (battle.updatedAt) {
+    throw new Error('updatedAt field cannot be set when updating a battle.');
+  }
+}
+
 router.get('/', async (req, res, next) => {
   try {
     const battles = await Battle.query()
@@ -75,6 +90,31 @@ router.get('/:id', async (req, res, next) => {
     return next();
   } catch (error) {
     return next(error);
+  }
+});
+
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const dbBattle = await Battle.query().findById(req.params.id);
+    if (dbBattle.streamerId !== req.signedCookies.twitch_user_id) {
+      res.status(401);
+      throw new Error('Cannot update another users battle.');
+    }
+
+    try {
+      validateUpdateBattleRequest(req.body);
+    } catch (error) {
+      res.status(400);
+      throw error;
+    }
+
+    const battle = await Battle.query().patchAndFetchById(
+      req.params.id,
+      req.body
+    );
+    res.json(battle);
+  } catch (error) {
+    next(error);
   }
 });
 
