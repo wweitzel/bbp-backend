@@ -24,7 +24,7 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
 
   if (user.status === 401) {
     const response = await refreshToken(twitchAccessToken, twitchRefreshToken);
-    if (response.status === 200) {
+    if (response.access_token) {
       res.cookie('twitch_access_token', response.access_token, {
         httpOnly: true,
         secure: true,
