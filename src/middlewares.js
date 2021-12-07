@@ -17,7 +17,7 @@ function notFound(req, res, next) {
 
 /* eslint-disable no-unused-vars */
 function errorHandler(err, req, res, next) {
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'test' && res.status !== 404) {
     console.error(err);
   }
   /* eslint-enable no-unused-vars */
