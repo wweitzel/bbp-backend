@@ -51,7 +51,7 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
 }
 
 function isStreamer(signedCookies) {
-  return signedCookies.isStreamer;
+  return signedCookies.streamer === 'true';
 }
 
 function userIdEquals(signedCookies, otherUserId) {
