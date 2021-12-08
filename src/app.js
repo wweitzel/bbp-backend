@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(morgan('dev'));
 }
 
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({
