@@ -5,6 +5,7 @@ const Battle = require('./battles.model');
 const dbNames = require('../../constants/dbNames');
 const submissions = require('../submissions/submissions.routes');
 const brackets = require('../brackets/brackets.routes');
+const { isStreamer, userIdEquals } = require('../../lib/authUtils');
 
 const router = express.Router({
   mergeParams: true
@@ -121,6 +122,17 @@ router.patch('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     validate(req.body, res);
+
+    if (!isStreamer(req.signedCookies)) {
+      res.status(401);
+      throw new Error(`User ${req.signedCookies.twitch_user_id} not authorized to create a battle`);
+    }
+
+    if (!userIdEquals(req.signedCookies, req.body.streamerId)) {
+      res.status(401);
+      throw new Error(`User ${req.signedCookies.twitch_user_id} cannot make a battle for other user ${req.body.streamerId}`);
+    }
+
     const minutes = req.body.votingDurationMinutes;
     const votingEndTime = new Date(new Date(req.body.endTime).getTime() + minutes * 60000);
     req.body.votingEndTime = votingEndTime;

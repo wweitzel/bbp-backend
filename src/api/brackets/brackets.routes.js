@@ -6,6 +6,9 @@ const Bracket = require('./brackets.model');
 const Participant = require('../participants/participants.model');
 const Match = require('../matches/matches.model');
 const Submission = require('../submissions/submissions.model');
+const Battle = require('../battles/battles.model');
+
+const { userIdEquals, isStreamer } = require('../../lib/authUtils');
 
 const router = express.Router({ mergeParams: true });
 
@@ -106,6 +109,13 @@ router.get('/:bracket_id', async (req, res, next) => {
 });
 
 router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
+  const battle = await Battle.query().findById(req.params.battleId);
+
+  if (!userIdEquals(req.signedCookies, battle.streamerId)) {
+    res.status(400);
+    throw new Error(`User ${req.signedCookies.twitch_user_id} not authorized to update user ${battle.streamerId} battle`);
+  }
+
   const match = await Match.query()
     .findById(req.params.match_id);
 
@@ -123,6 +133,18 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    const battle = await Battle.query().findById(req.params.battleId);
+
+    if (!isStreamer(req.signedCookies)) {
+      res.status(400);
+      throw new Error('Must be a streamer to create a bracket');
+    }
+
+    if (!userIdEquals(req.signedCookies, battle.streamerId)) {
+      res.status(400);
+      throw new Error(`User ${req.signedCookies.twitch_user_id} not authorized create bracket for ${battle.streamerId} battle`);
+    }
+
     const bracket = await bracketController.createBracket(req, res, next);
     return res.json(await getBracket(bracket.id, req.params.battle_id, res));
   } catch (error) {

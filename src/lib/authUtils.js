@@ -50,8 +50,18 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
   return user;
 }
 
+function isStreamer(signedCookies) {
+  return signedCookies.isStreamer;
+}
+
+function userIdEquals(signedCookies, otherUserId) {
+  return signedCookies.twitch_user_id === otherUserId;
+}
+
 module.exports = {
   validateAndRefreshToken,
   validateToken,
-  refreshToken
+  refreshToken,
+  isStreamer,
+  userIdEquals
 };

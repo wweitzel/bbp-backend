@@ -5,6 +5,7 @@ const dbNames = require('../../constants/dbNames');
 const Submission = require('./submissions.model');
 const User = require('../users/users.model');
 const Battle = require('../battles/battles.model');
+const { userIdEquals } = require('../../lib/authUtils');
 
 const router = express.Router({ mergeParams: true });
 
@@ -77,6 +78,11 @@ router.post('/', async (req, res, next) => {
       throw new Error('User with twitchUserId ' + req.body.subitterId + ' does not exist');
     }
     req.body.submitterUsername = user.twitchUsername;
+
+    if (!userIdEquals(req.signedCookies, req.body.submitterId)) {
+      res.status(400);
+      throw new Error(`User ${req.signedCookies.twitch_user_id} attempting to submit beat for a different user ${req.body.submitterId}`);
+    }
 
     const submission = await Submission.query()
       .insert(req.body)
