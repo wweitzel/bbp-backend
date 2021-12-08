@@ -36,7 +36,7 @@ app.use(helmet());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({
   // TODO: Probably dont want to include localhost in prod
-  origin: [process.env.FRONTEND_ORIGIN, 'http://localhost:3000'],
+  origin: [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGIN_2, 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
