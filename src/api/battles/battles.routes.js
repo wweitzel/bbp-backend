@@ -55,7 +55,7 @@ router.get('/', async (req, res, next) => {
       httpOnly: true,
       secure: true,
       signed: true,
-      domain: 'https://beatbattleplatform.com'
+      proxy: true
     });
     const battles = await Battle.query()
       .select(fields)
