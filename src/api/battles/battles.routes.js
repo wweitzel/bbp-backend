@@ -50,6 +50,11 @@ function validateUpdateBattleRequest(battle) {
 
 router.get('/', async (req, res, next) => {
   try {
+    res.cookie('test_cookie', 'test', {
+      httpOnly: true,
+      secure: true,
+      signed: true
+    });
     const battles = await Battle.query()
       .select(fields)
       .where(dbNames.battleColumns.deletedAt, null);
