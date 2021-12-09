@@ -11,10 +11,10 @@
     "migrate": "npx knex migrate:latest",
     "rollback": "npx knex migrate:rollback",
     "seed": "knex seed:run",
-    "staging-rollback": "heroku run knex migrate:rollback --remote heroku-staging",
-    "staging-migrate": "heroku run knex migrate:latest --remote heroku-staging",
-    "staging-seed": "heroku run knex seed:run --remote heroku-staging",
-    "staging-logs": "heroku logs -t --remote heroku-staging"
+    "staging-rollback": "heroku run knex migrate:rollback --remote staging",
+    "staging-migrate": "heroku run knex migrate:latest --remote staging",
+    "staging-seed": "heroku run knex seed:run --remote staging",
+    "staging-logs": "heroku logs -t --remote staging"
   },
   "keywords": [],
   "author": "Wes Weitzel <wesweitzel@gmail.com>",

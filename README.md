@@ -43,11 +43,3 @@ npm run test
 ```
 npm run dev
 ```
-
-## Switching Remotes
-heroku git:remote -a battle-test-staging
-
-
-mea6nhz3ez40blxcb6rllsqg0xe1b4
-
-https://cheatcode.co/tutorials/how-to-implement-secure-httponly-cookies-in-node-js-with-express
