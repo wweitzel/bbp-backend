@@ -50,10 +50,12 @@ function validateUpdateBattleRequest(battle) {
 
 router.get('/', async (req, res, next) => {
   try {
+    console.log('setting cookie');
     res.cookie('test_cookie', 'test', {
       httpOnly: true,
       secure: true,
-      signed: true
+      signed: true,
+      domain: 'https://beatbattleplatform.com'
     });
     const battles = await Battle.query()
       .select(fields)
