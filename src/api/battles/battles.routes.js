@@ -55,8 +55,7 @@ router.get('/', async (req, res, next) => {
       httpOnly: true,
       secure: true,
       signed: true,
-      domain: '.beatbattleplatform.com',
-      sameSite: 'none'
+      domain: '.beatbattleplatform.com'
     });
     const battles = await Battle.query()
       .select(fields)
