@@ -55,7 +55,7 @@ router.get('/', async (req, res, next) => {
       httpOnly: true,
       secure: true,
       signed: true,
-      proxy: true,
+      sameSite: 'none'
     });
     const battles = await Battle.query()
       .select(fields)
