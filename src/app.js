@@ -13,8 +13,6 @@ const app = express();
 
 require('./db');
 
-app.set('trust proxy', 1);
-
 morgan.token('user-id', (req) => req.userId);
 morgan.token('username', (req) => req.username);
 
@@ -34,7 +32,6 @@ if (process.env.NODE_ENV === 'production') {
   app.use(morgan('dev'));
 }
 
-app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors({
