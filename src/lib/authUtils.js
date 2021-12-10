@@ -28,13 +28,15 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
       res.cookie('twitch_access_token', response.access_token, {
         httpOnly: true,
         secure: true,
-        signed: true
+        signed: true,
+        domain: process.env.COOKIE_DOMAIN
       });
 
       res.cookie('twitch_refresh_token', response.refresh_token, {
         httpOnly: true,
         secure: true,
-        signed: true
+        signed: true,
+        domain: process.env.COOKIE_DOMAIN
       });
 
       user = await validateToken(response.access_token);

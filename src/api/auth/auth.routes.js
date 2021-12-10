@@ -53,28 +53,33 @@ router.get('/authenticate', async (req, res) => {
     res.cookie('twitch_access_token', access_token, {
       httpOnly: true,
       secure: true,
-      signed: true
+      signed: true,
+      domain: process.env.COOKIE_DOMAIN
     });
 
     res.cookie('twitch_refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
-      signed: true
+      signed: true,
+      domain: process.env.COOKIE_DOMAIN
     });
 
     res.cookie('streamer', dbUser.streamer, {
       secure: true,
-      signed: true
+      signed: true,
+      domain: process.env.COOKIE_DOMAIN
     });
 
     res.cookie('twitch_username', user.login, {
       secure: true,
-      signed: true
+      signed: true,
+      domain: process.env.COOKIE_DOMAIN
     });
 
     res.cookie('twitch_user_id', user.user_id, {
       secure: true,
-      signed: true
+      signed: true,
+      domain: process.env.COOKIE_DOMAIN
     });
   } else {
     console.error('Error logging in ', json);
@@ -99,11 +104,11 @@ router.get('/validate', async (req, res, next) => {
 });
 
 router.get('/logout', (req, res) => {
-  res.clearCookie('twitch_access_token');
-  res.clearCookie('twitch_refresh_token');
-  res.clearCookie('streamer');
-  res.clearCookie('twitch_username');
-  res.clearCookie('twitch_user_id');
+  res.clearCookie('twitch_access_token', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_refresh_token', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('streamer', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_username', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_user_id', { domain: process.env.COOKIE_DOMAIN });
   res.json({});
 });
 
