@@ -13,7 +13,7 @@ const app = express();
 
 require('./db');
 
-app.enable('trust proxy');
+app.set('trust proxy', 1);
 
 morgan.token('user-id', (req) => req.userId);
 morgan.token('username', (req) => req.username);
