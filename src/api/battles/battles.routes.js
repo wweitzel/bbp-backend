@@ -54,8 +54,7 @@ router.get('/', async (req, res, next) => {
     res.cookie('test_cookie', 'test', {
       httpOnly: true,
       secure: true,
-      signed: true,
-      domain: '.beatbattleplatform.com'
+      signed: true
     });
     const battles = await Battle.query()
       .select(fields)
