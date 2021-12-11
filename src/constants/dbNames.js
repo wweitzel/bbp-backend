@@ -31,6 +31,7 @@ const battleColumns = {
   isAnonymous: 'is_anonymous',
   isSubscriberOnly: 'is_subscriber_only',
   sampleUrl: 'sample_url',
+  streamerUsername: 'streamer_username',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   deletedAt: 'deleted_at'

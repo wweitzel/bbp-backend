@@ -24,6 +24,7 @@ exports.up = async (knex) => {
     table.boolean(dbNames.battleColumns.isAnonymous).defaultTo(false);
     table.boolean(dbNames.battleColumns.isSubscriberOnly).defaultTo(false);
     table.string(dbNames.battleColumns.sampleUrl);
+    table.string(dbNames.battleColumns.streamerUsername).notNullable();
     addDefaultColumns(table);
   });
 

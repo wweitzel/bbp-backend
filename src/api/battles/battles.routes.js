@@ -20,6 +20,7 @@ const fields = [
   dbNames.battleColumns.isAnonymous,
   dbNames.battleColumns.isSubscriberOnly,
   dbNames.battleColumns.sampleUrl,
+  dbNames.battleColumns.streamerUsername,
   dbNames.battleColumns.createdAt
 ];
 
@@ -53,25 +54,6 @@ router.get('/', async (req, res, next) => {
     const battles = await Battle.query()
       .select(fields)
       .where(dbNames.battleColumns.deletedAt, null);
-    const ids = new Set(battles.map((battle) => battle.streamerId));
-    const promises = [];
-    // TODO: Should be able to get all users in one query instead of multiple
-    ids.forEach(async (id) => {
-      promises.push(User.query()
-        .where(dbNames.userColumns.twitchUserId, id)
-        .andWhere(dbNames.userColumns.deletedAt, null)
-        .first());
-    });
-    const idToUser = new Map();
-    await Promise.all(promises).then((users) => {
-      users.forEach((user) => {
-        idToUser.set(user.twitchUserId, user);
-      });
-    });
-
-    battles.forEach((battle) => {
-      battle.streamerUsername = idToUser.get(battle.streamerId).twitchUsername;
-    });
     res.json(battles);
   } catch (error) {
     next(error);
@@ -131,6 +113,19 @@ router.post('/', async (req, res, next) => {
     if (!userIdEquals(req.signedCookies, req.body.streamerId)) {
       res.status(401);
       throw new Error(`User ${req.signedCookies.twitch_user_id} cannot make a battle for other user ${req.body.streamerId}`);
+    }
+
+    if (req.signedCookies.twitch_username) {
+      req.body.streamerUsername = req.signedCookies.twitch_username;
+    } else {
+      // We should never get here because if the streamer
+      // token is set, the username should be as well.
+      console.error('Twitch username cookie not set but streamer cookie was set.');
+      const user = await User.query()
+        .select(fields)
+        .where(dbNames.userColumns.twitchUserId, req.body.streamerId)
+        .andWhere(dbNames.userColumns.deletedAt, null);
+      req.body.streamerUsername = user.twitchUsername;
     }
 
     const minutes = req.body.votingDurationMinutes;

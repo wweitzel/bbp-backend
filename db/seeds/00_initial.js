@@ -12,11 +12,17 @@ function createSubmission(battleId, submitterId, submitterUsername, soundcloudLi
   };
 }
 
-function createBattle(
-  streamerId, endTime, name, votingEndTime, isAnonymous, isSubscriberOnly, sampleUrl
-) {
+function createBattle(streamerId, endTime, name, votingEndTime,
+  isAnonymous, isSubscriberOnly, sampleUrl, streamerUsername) {
   return {
-    streamerId, endTime, name, votingEndTime, isAnonymous, isSubscriberOnly, sampleUrl
+    streamerId,
+    endTime,
+    name,
+    votingEndTime,
+    isAnonymous,
+    isSubscriberOnly,
+    sampleUrl,
+    streamerUsername
   };
 }
 
@@ -106,7 +112,7 @@ exports.seed = async (knex) => {
     createUser('477294350', 'kennybeats', false),
     createUser('3', 'alextumay', false),
     createUser('4', 'spell', false),
-    createUser('57800241', 'wesalan', true),
+    createUser('87523161', 'zestyyyyyyy', true),
     createUser('207861573', 'dcs_lefty', true),
     createUser('7', 'adam', false),
     createUser('8', 'fond', false),
@@ -128,10 +134,10 @@ exports.seed = async (knex) => {
   const endTime = new Date(new Date().getTime() + (1 * 60 * 60 * 1000));
   const votingEndTime = new Date(endTime.getTime() + 15 * 60000); // 15 mintues after endTime
   const battles = [
-    createBattle('516754928', endTime, 'Battle 1', votingEndTime, false, true, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops'),
-    createBattle('516754928', endTime, 'Battle 2', votingEndTime, true, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops'),
-    createBattle('477294350', endTime, 'Battle 3', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops'),
-    createBattle('4', endTime, 'Battle 4', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops')
+    createBattle('516754928', endTime, 'Battle 1', votingEndTime, false, true, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'chrispunsalan'),
+    createBattle('516754928', endTime, 'Battle 2', votingEndTime, true, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'chrispunsalan'),
+    createBattle('477294350', endTime, 'Battle 3', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'kennybeats'),
+    createBattle('4', endTime, 'Battle 4', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'spell')
   ];
 
   await knex(dbNames.tableNames.battle)
@@ -143,7 +149,7 @@ exports.seed = async (knex) => {
     createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
     createSubmission(1, '3', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 3),
     createSubmission(1, '4', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 4),
-    createSubmission(1, '57800241', 'wesalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
+    createSubmission(1, '87523161', 'zestyyyyyyy', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
     createSubmission(1, '207861573', 'dcs_lefty', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 6),
     createSubmission(1, '7', 'adam', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 7),
     createSubmission(1, '8', 'fond', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 8),
