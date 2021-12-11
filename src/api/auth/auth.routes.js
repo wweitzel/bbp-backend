@@ -99,11 +99,7 @@ router.get('/validate', async (req, res, next) => {
 });
 
 router.get('/logout', (req, res) => {
-  res.clearCookie('twitch_access_token', { domain: process.env.COOKIE_DOMAIN });
-  res.clearCookie('twitch_refresh_token', { domain: process.env.COOKIE_DOMAIN });
-  res.clearCookie('streamer', { domain: process.env.COOKIE_DOMAIN });
-  res.clearCookie('twitch_username', { domain: process.env.COOKIE_DOMAIN });
-  res.clearCookie('twitch_user_id', { domain: process.env.COOKIE_DOMAIN });
+  authUtils.logout(res);
   res.json({});
 });
 

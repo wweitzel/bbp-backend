@@ -1,5 +1,13 @@
 const fetch = require('node-fetch');
 
+function logout(res) {
+  res.clearCookie('twitch_access_token', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_refresh_token', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('streamer', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_username', { domain: process.env.COOKIE_DOMAIN });
+  res.clearCookie('twitch_user_id', { domain: process.env.COOKIE_DOMAIN });
+}
+
 async function refreshToken(access_token, refresh_token) {
   const r = await fetch('https://id.twitch.tv/oauth2/token'
     + '?grant_type=refresh_token'
@@ -43,6 +51,7 @@ async function validateAndRefreshToken(twitchAccessToken, twitchRefreshToken, re
       user.twitchAccessToken = response.access_token;
     } else {
       res.status(401);
+      logout(res);
       throw new Error('Un-Authorized: Invalid access/refresh token. Please login again.');
     }
   } else {
@@ -65,5 +74,6 @@ module.exports = {
   validateToken,
   refreshToken,
   isStreamer,
-  userIdEquals
+  userIdEquals,
+  logout
 };
