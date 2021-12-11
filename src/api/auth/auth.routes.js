@@ -22,15 +22,12 @@ router.get('/authenticate', async (req, res) => {
   let dbUser;
 
   if (access_token) {
-    console.log('access token found');
     const user = await authUtils.validateToken(access_token);
-    console.log('user', user);
     dbUser = await User.query()
       .where(dbNames.userColumns.twitchUserId, user.user_id)
       .andWhere(dbNames.userColumns.deletedAt, null)
       .first();
     if (!dbUser) {
-      console.log('storing user');
       const u = {
         twitchUserId: user.user_id,
         twitchUsername: user.login,
@@ -41,7 +38,6 @@ router.get('/authenticate', async (req, res) => {
         .returning('*');
     } else {
       // Sync our username with twitch username since it can change on twitch
-      console.log('syncing db user');
       dbUser = await User.query()
         .findById(dbUser.twitchUserId)
         .patch({
@@ -49,7 +45,6 @@ router.get('/authenticate', async (req, res) => {
         }).returning('*');
     }
 
-    console.log('setting twtich access');
     res.cookie('twitch_access_token', access_token, {
       httpOnly: true,
       secure: true,
