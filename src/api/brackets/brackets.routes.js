@@ -109,21 +109,21 @@ router.get('/:bracket_id', async (req, res, next) => {
 });
 
 router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
-  const battle = await Battle.query().findById(req.params.battleId);
-
-  if (!userIdEquals(req.signedCookies, battle.streamerId)) {
-    res.status(400);
-    throw new Error(`User ${req.signedCookies.twitch_user_id} not authorized to update user ${battle.streamerId} battle`);
-  }
-
-  const match = await Match.query()
-    .findById(req.params.match_id);
-
-  if (!match) {
-    return next();
-  }
-
   try {
+    const battle = await Battle.query().findById(req.params.battle_id);
+
+    if (!userIdEquals(req.signedCookies, battle.streamerId)) {
+      res.status(400);
+      throw new Error(`User ${req.signedCookies.twitch_user_id} not authorized to update user ${battle.streamerId} battle`);
+    }
+
+    const match = await Match.query()
+      .findById(req.params.match_id);
+
+    if (!match) {
+      return next();
+    }
+
     await bracketController.saveMatchWinner(req, res, next);
     return res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
   } catch (error) {
