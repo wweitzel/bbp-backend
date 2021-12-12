@@ -6,9 +6,11 @@ function createUser(twitchUserId, twitchUsername, streamer) {
   return { twitchUserId, twitchUsername, streamer };
 }
 
-function createSubmission(battleId, submitterId, submitterUsername, soundcloudLink, rank) {
+function createSubmission(
+  battleId, submitterId, submitterUsername, soundcloudLink, rank, voteCount
+) {
   return {
-    battleId, submitterId, submitterUsername, soundcloudLink, rank
+    battleId, submitterId, submitterUsername, soundcloudLink, rank, voteCount
   };
 }
 
@@ -89,15 +91,15 @@ async function createMatches(participantCount, bracketId, submissions, trx) {
   await trx(dbNames.tableNames.participant).insert(participants).returning('*');
 }
 
-async function createBracket(knex, submissions) {
+async function createBracket(knex, rankedSubmissions, battleId) {
   await knex.transaction(async (trx) => {
     const bracket = {
-      battleId: 1
+      battleId
     };
     const [createdBracket] = await trx(dbNames.tableNames.bracket).insert(bracket).returning('*');
     // TODO: We are creating 8 matches but have 10 submissions. This works by chance
     // because the seed puts the ranks in order, but we should fix it
-    await createMatches(8, createdBracket.id, submissions, trx);
+    await createMatches(8, createdBracket.id, rankedSubmissions, trx);
   });
 }
 
@@ -109,57 +111,82 @@ exports.seed = async (knex) => {
 
   const users = [
     createUser('516754928', 'chrispunsalan', true),
-    createUser('477294350', 'kennybeats', false),
-    createUser('3', 'alextumay', false),
-    createUser('4', 'spell', false),
+    createUser('477294350', 'kennybeats', true),
+    createUser('515338746', 'alextumay', true),
+    createUser('733149', 'spell', true),
     createUser('87523161', 'zestyyyyyyy', true),
     createUser('207861573', 'dcs_lefty', true),
-    createUser('7', 'adam', false),
-    createUser('8', 'fond', false),
-    createUser('9', 'scott', false),
-    createUser('10', 'richy', false)
   ];
 
-  const moreUsers = [];
-  // Uncomment for more users
-  // for (let i = 11; i < 1000; i++) {
-  //   const username = 'user' + i;
-  //   moreUsers.push(createUser(i.toString(), username, false));
-  // }
+  for (let i = 1; i < 1000; i++) {
+    const username = 'user' + i;
+    users.push(createUser(i.toString(), username, false));
+  }
 
   await knex(dbNames.tableNames.user)
-    .insert([...users, ...moreUsers])
+    .insert(users)
     .returning('*');
 
   const endTime = new Date(new Date().getTime() + (1 * 60 * 60 * 1000));
   const votingEndTime = new Date(endTime.getTime() + 15 * 60000); // 15 mintues after endTime
+
+  const oldEndTime = new Date(new Date().getTime() - (1 * 60 * 60 * 24 * 2 * 1000));
+  const oldVotingEndTime = new Date(oldEndTime.getTime() + 15 * 60000);
+
   const battles = [
-    createBattle('516754928', endTime, 'Battle 1', votingEndTime, false, true, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'chrispunsalan'),
-    createBattle('516754928', endTime, 'Battle 2', votingEndTime, true, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'chrispunsalan'),
-    createBattle('477294350', endTime, 'Battle 3', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'kennybeats'),
-    createBattle('4', endTime, 'Battle 4', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'spell')
+    createBattle('516754928', endTime, 'Live battle', votingEndTime, false, false, 'https://soundcloud.com/mondoloops/taurus-dcs-lefty-mondo-loops', 'chrispunsalan'),
+    createBattle('477294350', endTime, 'kennys battle', votingEndTime, false, false, 'https://soundcloud.com/3200warhol/birds-nest-prod-kenny-beats', 'kennybeats'),
+    createBattle('516754928', oldEndTime, 'Really fun battle!', oldVotingEndTime, false, false, 'https://soundcloud.com/prodbychris/escape', 'chrispunsalan'),
+    createBattle('733149', endTime, 'another one', votingEndTime, true, true, 'https://soundcloud.com/familyofkings/another-one', 'spell'),
+    createBattle('207861573', oldEndTime, 'lot of submissions', oldVotingEndTime, false, false, 'https://soundcloud.com/familyofkings/another-one', 'dcs_lefty')
   ];
 
   await knex(dbNames.tableNames.battle)
     .insert(battles)
     .returning('*');
 
-  const submissions = [
-    createSubmission(1, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1),
-    createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2),
-    createSubmission(1, '3', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 3),
-    createSubmission(1, '4', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 4),
-    createSubmission(1, '87523161', 'zestyyyyyyy', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 5),
-    createSubmission(1, '207861573', 'dcs_lefty', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 6),
-    createSubmission(1, '7', 'adam', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 7),
-    createSubmission(1, '8', 'fond', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 8),
-    createSubmission(1, '9', 'scott', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 9),
-    createSubmission(1, '10', 'richy', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 10)
+  const liveSubmissions = [
+    createSubmission(1, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', null, null),
+    createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', null, null),
+    createSubmission(1, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', null, null),
+    createSubmission(1, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', null, null),
+    createSubmission(1, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', null, null),
+    createSubmission(1, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', null, null),
+    createSubmission(1, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
+    createSubmission(1, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
+    createSubmission(1, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
+    createSubmission(1, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
   ];
 
-  const createdSubmissions = await knex(dbNames.tableNames.submission)
-    .insert(submissions)
+  const oldSubmissions = [
+    createSubmission(3, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1, 43),
+    createSubmission(3, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2, 35),
+    createSubmission(3, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', 3, 3),
+    createSubmission(3, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', 4, 30),
+    createSubmission(3, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', 5, 10),
+    createSubmission(3, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', 6, 7),
+    createSubmission(3, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', 7, 3),
+    createSubmission(3, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', 8, 3),
+    createSubmission(3, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', 9, 1),
+    createSubmission(3, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', 10, 0)
+  ];
+
+  const thousandSubmissions = [];
+  for (let i = 1; i < 1000; i++) {
+    thousandSubmissions.push(createSubmission(5, i.toString(), 'user' + i, 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', null, 1000 - i));
+  }
+
+  await knex(dbNames.tableNames.submission)
+    .insert(liveSubmissions)
     .returning('*');
 
-  await createBracket(knex, createdSubmissions);
+  await knex(dbNames.tableNames.submission)
+    .insert(thousandSubmissions)
+    .returning('*');
+
+  const createdOldSubmissions = await knex(dbNames.tableNames.submission)
+    .insert(oldSubmissions)
+    .returning('*');
+
+  await createBracket(knex, createdOldSubmissions, 3);
 };
