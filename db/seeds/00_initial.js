@@ -138,7 +138,8 @@ exports.seed = async (knex) => {
     createBattle('477294350', endTime, 'kennys battle', votingEndTime, false, false, 'https://soundcloud.com/3200warhol/birds-nest-prod-kenny-beats', 'kennybeats'),
     createBattle('516754928', oldEndTime, 'Really fun battle!', oldVotingEndTime, false, false, 'https://soundcloud.com/prodbychris/escape', 'chrispunsalan'),
     createBattle('733149', endTime, 'another one', votingEndTime, true, true, 'https://soundcloud.com/familyofkings/another-one', 'spell'),
-    createBattle('207861573', oldEndTime, 'lot of submissions', oldVotingEndTime, false, false, 'https://soundcloud.com/familyofkings/another-one', 'dcs_lefty')
+    createBattle('207861573', oldEndTime, 'lot of submissions', oldVotingEndTime, false, false, 'https://soundcloud.com/familyofkings/another-one', 'dcs_lefty'),
+    createBattle('87523161', oldEndTime, 'battle of all battles', oldVotingEndTime, false, false, 'https://soundcloud.com/familyofkings/another-one', 'zestyyyyyyy')
   ];
 
   await knex(dbNames.tableNames.battle)
@@ -146,30 +147,32 @@ exports.seed = async (knex) => {
     .returning('*');
 
   const liveSubmissions = [
-    createSubmission(1, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', null, null),
-    createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', null, null),
-    createSubmission(1, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', null, null),
-    createSubmission(1, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', null, null),
-    createSubmission(1, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', null, null),
-    createSubmission(1, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', null, null),
-    createSubmission(1, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
-    createSubmission(1, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
-    createSubmission(1, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
-    createSubmission(1, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, null),
+    createSubmission(1, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', null, 23),
+    createSubmission(1, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', null, 21),
+    createSubmission(1, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', null, 20),
+    createSubmission(1, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', null, 16),
+    createSubmission(1, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', null, 12),
+    createSubmission(1, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', null, 10),
+    createSubmission(1, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, 6),
+    createSubmission(1, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, 3),
+    createSubmission(1, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, 3),
+    createSubmission(1, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', null, 2),
   ];
 
-  const oldSubmissions = [
-    createSubmission(3, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1, 43),
-    createSubmission(3, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2, 35),
-    createSubmission(3, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', 3, 3),
-    createSubmission(3, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', 4, 30),
-    createSubmission(3, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', 5, 10),
-    createSubmission(3, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', 6, 7),
-    createSubmission(3, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', 7, 3),
-    createSubmission(3, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', 8, 3),
-    createSubmission(3, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', 9, 1),
-    createSubmission(3, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', 10, 0)
-  ];
+  function getOldSubmissions(battleId) {
+    return [
+      createSubmission(battleId, '516754928', 'chrispunsalan', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-silk', 1, 43),
+      createSubmission(battleId, '477294350', 'kennybeats', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-3', 2, 35),
+      createSubmission(battleId, '515338746', 'alextumay', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-4', 3, 3),
+      createSubmission(battleId, '733149', 'spell', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-5', 4, 30),
+      createSubmission(battleId, '1', 'user1', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-6', 5, 10),
+      createSubmission(battleId, '2', 'user2', 'https://soundcloud.com/brunomars/bruno-mars-anderson-paak-7', 6, 7),
+      createSubmission(battleId, '3', 'user3', 'https://soundcloud.com/freenationals/obituaries-instrumental?in=freenationals/sets/free-nationals-instrumentals', 7, 3),
+      createSubmission(battleId, '4', 'user4', 'https://soundcloud.com/freenationals/beauty-essex-instrumental?in=freenationals/sets/free-nationals-instrumentals', 8, 3),
+      createSubmission(battleId, '5', 'user5', 'https://soundcloud.com/freenationals/on-sight-instrumental?in=freenationals/sets/free-nationals-instrumentals', 9, 1),
+      createSubmission(battleId, '6', 'user6', 'https://soundcloud.com/freenationals/shibuya-instrumental?in=freenationals/sets/free-nationals-instrumentals', 10, 0)
+    ];
+  }
 
   const thousandSubmissions = [];
   for (let i = 1; i < 1000; i++) {
@@ -185,7 +188,11 @@ exports.seed = async (knex) => {
     .returning('*');
 
   const createdOldSubmissions = await knex(dbNames.tableNames.submission)
-    .insert(oldSubmissions)
+    .insert(getOldSubmissions(3))
+    .returning('*');
+
+  await knex(dbNames.tableNames.submission)
+    .insert(getOldSubmissions(6))
     .returning('*');
 
   await createBracket(knex, createdOldSubmissions, 3);
