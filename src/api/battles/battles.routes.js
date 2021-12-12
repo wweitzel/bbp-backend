@@ -38,6 +38,9 @@ function validateUpdateBattleRequest(battle) {
   if (battle.id) {
     throw new Error('id field cannot be set when updating a battle.');
   }
+  if (battle.votingEndTime) {
+    throw new Error('votingEndTime field cannot be set when updating a battle. Please set votingDurationMinutes instead.');
+  }
   if (battle.streamerId) {
     throw new Error('streamerId field cannot be set when updating a battle.');
   }
@@ -47,6 +50,14 @@ function validateUpdateBattleRequest(battle) {
   if (battle.updatedAt) {
     throw new Error('updatedAt field cannot be set when updating a battle.');
   }
+}
+
+function calculateVotingEndTime(battleEndTime, votingDurationMinutes) {
+  return new Date(new Date(battleEndTime).getTime() + votingDurationMinutes * 60000);
+}
+
+function getMinutesBetween(date1, date2) {
+  return Math.abs((date1.getTime() - date2.getTime()) / 60000);
 }
 
 router.get('/', async (req, res, next) => {
@@ -91,6 +102,23 @@ router.patch('/:id', async (req, res, next) => {
       throw error;
     }
 
+    if (req.body.endTime && req.body.votingDurationMinutes) {
+      req.body.votingEndTime = calculateVotingEndTime(
+        req.body.endTime, req.body.votingDurationMinutes
+      );
+      delete req.body.votingDurationMinutes;
+    } else if (req.body.endTime && !req.body.votingDurationMinutes) {
+      const minutes = getMinutesBetween(dbBattle.endTime, dbBattle.votingEndTime);
+      req.body.votingEndTime = calculateVotingEndTime(
+        req.body.endTime, minutes
+      );
+    } else if (!req.body.endTime && req.body.votingDurationMinutes) {
+      req.body.votingEndTime = calculateVotingEndTime(
+        dbBattle.endTime, req.body.votingDurationMinutes
+      );
+      delete req.body.votingDurationMinutes;
+    }
+
     const battle = await Battle.query().patchAndFetchById(
       req.params.id,
       req.body
@@ -128,9 +156,9 @@ router.post('/', async (req, res, next) => {
       req.body.streamerUsername = user.twitchUsername;
     }
 
-    const minutes = req.body.votingDurationMinutes;
-    const votingEndTime = new Date(new Date(req.body.endTime).getTime() + minutes * 60000);
-    req.body.votingEndTime = votingEndTime;
+    req.body.votingEndTime = calculateVotingEndTime(
+      req.body.endTime, req.body.votingDurationMinutes
+    );
     delete req.body.votingDurationMinutes;
     const battle = await Battle.query()
       .insert(req.body)
