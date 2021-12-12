@@ -133,7 +133,7 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const battle = await Battle.query().findById(req.params.battleId);
+    const battle = await Battle.query().findById(req.params.battle_id);
 
     if (!isStreamer(req.signedCookies)) {
       res.status(400);
