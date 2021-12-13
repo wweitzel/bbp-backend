@@ -18,7 +18,8 @@ router.get('/', async (req, res, next) => {
   try {
     const users = await User.query()
       .select(fields)
-      .where(dbNames.userColumns.deletedAt, null);
+      .where(dbNames.userColumns.deletedAt, null)
+      .limit(100);
     return res.json(users);
   } catch (error) {
     return next(error);
@@ -39,9 +40,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.get('/:id/subscriptions', async (req, res, next) => {
   try {
-    if (!req.signedCookies.twitch_access_token) {
-      throw new Error('Must be logged (twtich_access_token cookie set) in to check subscriptions.');
-    }
+    authUtils.validateLoggedIn(req, res);
 
     const { streamerId } = req.query;
     if (!streamerId) {

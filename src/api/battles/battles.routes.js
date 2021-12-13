@@ -5,7 +5,7 @@ const Battle = require('./battles.model');
 const dbNames = require('../../constants/dbNames');
 const submissions = require('../submissions/submissions.routes');
 const brackets = require('../brackets/brackets.routes');
-const { isStreamer, userIdEquals } = require('../../lib/authUtils');
+const { isStreamer, userIdEquals, validateLoggedIn } = require('../../lib/authUtils');
 
 const router = express.Router({
   mergeParams: true
@@ -89,6 +89,8 @@ router.get('/:id', async (req, res, next) => {
 
 router.patch('/:id', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
+
     const dbBattle = await Battle.query().findById(req.params.id);
     if (dbBattle.streamerId !== req.signedCookies.twitch_user_id) {
       res.status(401);
@@ -131,6 +133,7 @@ router.patch('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
     validate(req.body, res);
 
     if (!isStreamer(req.signedCookies)) {

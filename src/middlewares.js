@@ -30,22 +30,7 @@ function errorHandler(err, req, res, next) {
   });
 }
 
-async function ensureLoggedIn(req, res, next) {
-  if (process.env.ALLOW_TOKEN_IN_HEADER === 'false' && !req.signedCookies.twitch_access_token) {
-    res.status(401);
-    next(new Error('Un-Authorized: Invalid access/refresh token. Please login again.'));
-  }
-
-  if (process.env.ALLOW_TOKEN_IN_HEADER === 'true' && !req.headers.twitch_access_token) {
-    res.status(401);
-    next(new Error('Dev mode Un-Authorized: Please add a twitch_access_token to localstorage.'));
-  }
-
-  next();
-}
-
 module.exports = {
   notFound,
-  errorHandler,
-  ensureLoggedIn
+  errorHandler
 };

@@ -5,7 +5,7 @@ const dbNames = require('../../constants/dbNames');
 const Submission = require('./submissions.model');
 const User = require('../users/users.model');
 const Battle = require('../battles/battles.model');
-const { userIdEquals } = require('../../lib/authUtils');
+const { userIdEquals, validateLoggedIn } = require('../../lib/authUtils');
 
 const router = express.Router({ mergeParams: true });
 
@@ -56,6 +56,8 @@ router.get('/:submitter_id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
+
     const battle = await Battle.query()
       .select(battleFields)
       .where(dbNames.battleColumns.id, req.params.battle_id)
@@ -95,6 +97,8 @@ router.post('/', async (req, res, next) => {
 
 router.post('/:submitter_id/votes', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
+
     const battle = await Battle.query()
       .select(battleFields)
       .where(dbNames.battleColumns.id, req.params.battle_id)

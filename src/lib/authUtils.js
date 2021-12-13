@@ -69,11 +69,19 @@ function userIdEquals(signedCookies, otherUserId) {
   return signedCookies.twitch_user_id === otherUserId;
 }
 
+function validateLoggedIn(req, res) {
+  if (!req.signedCookies.twitch_access_token) {
+    res.status(401);
+    throw new Error('Unauthorized. Please login.');
+  }
+}
+
 module.exports = {
   validateAndRefreshToken,
   validateToken,
   refreshToken,
   isStreamer,
   userIdEquals,
-  logout
+  logout,
+  validateLoggedIn
 };

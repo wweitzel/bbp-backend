@@ -8,7 +8,7 @@ const Match = require('../matches/matches.model');
 const Submission = require('../submissions/submissions.model');
 const Battle = require('../battles/battles.model');
 
-const { userIdEquals, isStreamer } = require('../../lib/authUtils');
+const { userIdEquals, isStreamer, validateLoggedIn } = require('../../lib/authUtils');
 
 const router = express.Router({ mergeParams: true });
 
@@ -80,26 +80,6 @@ router.get('/', async (req, res) => {
   res.json(brackets);
 });
 
-// Test endpoiont to reset bracket
-router.post('/:bracket_id/reset', async (req, res) => {
-  await Participant.transaction(async (trx) => {
-    await Participant.query(trx)
-      .delete()
-      .whereIn(dbNames.participantColumns.matchId, ['5', '6', '7', '8']);
-    const ps = await Participant.query(trx)
-      .select(participantFileds)
-      .whereIn(dbNames.participantColumns.matchId, ['1', '2', '3', '4']);
-    for (let i = 0; i < ps.length; i++) {
-      await Participant.query(trx)
-        .patch({
-          isWinner: false,
-          resultText: ''
-        });
-    }
-  });
-  res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
-});
-
 router.get('/:bracket_id', async (req, res, next) => {
   try {
     res.json(await getBracket(req.params.bracket_id, req.params.battle_id, res));
@@ -110,6 +90,8 @@ router.get('/:bracket_id', async (req, res, next) => {
 
 router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
+
     const battle = await Battle.query().findById(req.params.battle_id);
 
     if (!userIdEquals(req.signedCookies, battle.streamerId)) {
@@ -133,6 +115,8 @@ router.post('/:bracket_id/matches/:match_id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    validateLoggedIn(req, res);
+
     const battle = await Battle.query().findById(req.params.battle_id);
 
     if (!isStreamer(req.signedCookies)) {
